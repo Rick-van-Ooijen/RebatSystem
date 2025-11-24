@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://cgi03c0ylki1"]
+
+[ext_resource type="Script" uid="uid://qh18wf5y2750" path="res://rb_interpreter.gd" id="1_ig7tw"]
+
+[node name="main" type="Node"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="RBInterpreter" type="RBInterpreter" parent="."]
+script = ExtResource("1_ig7tw")
