@@ -1,10 +1,10 @@
 /=
-"bananen"
-99
-
-orchid
+==
+>=
+var
 varken
 for
-ja ap
-a+var        +
-+++++
+99.55
+"Hello,
+World!"
+// this won't be read

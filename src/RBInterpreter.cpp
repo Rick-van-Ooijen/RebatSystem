@@ -84,13 +84,13 @@ std::vector<Token> Scanner::scanTokens(std::string source)
 		
 		// make a token
 		switch (c) {
-			case '(': {addToken(TokenType::T_LEFT_PAREN, "Lparen");} break;
-			case ')': {addToken(TokenType::T_RIGHT_PAREN, "Rparen");} break;
-			case '{': {addToken(TokenType::T_LEFT_BRACE), "Lbrac";} break;
-			case '}': {addToken(TokenType::T_RIGHT_BRACE, "Rbrac");} break;
-			case ',': {addToken(TokenType::T_COMMA, "comma");} break;
-			case '.': {addToken(TokenType::T_DOT, "dot");} break;
-			case '-': {addToken(TokenType::T_MINUS, "minus");} break;
+			case '(': {addToken(TokenType::T_LEFT_PAREN);} break;
+			case ')': {addToken(TokenType::T_RIGHT_PAREN);} break;
+			case '{': {addToken(TokenType::T_LEFT_BRACE);} break;
+			case '}': {addToken(TokenType::T_RIGHT_BRACE);} break;
+			case ',': {addToken(TokenType::T_COMMA);} break;
+			case '.': {addToken(TokenType::T_DOT);} break;
+			case '-': {addToken(TokenType::T_MINUS);} break;
 			case '+': {addToken(TokenType::T_PLUS);} break;
 			case ';': {addToken(TokenType::T_SEMICOLON);} break;
 			case '*': {addToken(TokenType::T_STAR);} break;
@@ -99,29 +99,29 @@ std::vector<Token> Scanner::scanTokens(std::string source)
 				// if the next character matches with a two-character lexeme, add that token and increase the counter by one so the second character isn't read twice.
 				if(source[current] == '=')
 				{	current++;
-					addToken(TokenType::T_BANG_EQUAL, "not is");}
-				else {addToken(TokenType::T_BANG, "not");};
+					addToken(TokenType::T_BANG_EQUAL);}
+				else {addToken(TokenType::T_BANG);};
 			} break;
 			case '=':
 			{
 				if(source[current] == '=')
 				{	current++;
-					addToken(TokenType::T_EQUAL_EQUAL, "check equal");}
-				else {addToken(TokenType::T_EQUAL, "is");};
+					addToken(TokenType::T_EQUAL_EQUAL);}
+				else {addToken(TokenType::T_EQUAL);};
 			} break;
 			case '<':
 			{
 				if(source[current] == '=')
 				{	current++;
-					addToken(TokenType::T_LESS_EQUAL, "less or eq");}
-				else {addToken(TokenType::T_LESS, "less");};
+					addToken(TokenType::T_LESS_EQUAL);}
+				else {addToken(TokenType::T_LESS);};
 			} break;
 			case '>':
 			{
 				if(source[current] == '=')
 				{	current++;
-					addToken(TokenType::T_GREATER_EQUAL, "big or eq");}
-				else {addToken(TokenType::T_GREATER, "big");};
+					addToken(TokenType::T_GREATER_EQUAL);}
+				else {addToken(TokenType::T_GREATER);};
 			} break;
 			case '/':
 			{
@@ -133,7 +133,7 @@ std::vector<Token> Scanner::scanTokens(std::string source)
 						current++;
 					}
 				}
-				else {addToken(TokenType::T_SLASH, "divide");};
+				else {addToken(TokenType::T_SLASH);};
 			} break;
 			case ' ': {} break; // whitespace: do nothing
 			case '\r': {} break;
