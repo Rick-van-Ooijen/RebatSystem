@@ -143,74 +143,152 @@ std::unordered_map<std::string, int> keywords = {
 	};
 };
 
+class AstPrinter;
+
 class Expr : public Object {
 	GDCLASS(Expr, Object)
 public:
 	Expr();
 	~Expr();
 
+	virtual std::string accept(AstPrinter* printer) {};
 
-}
+protected:
+	static void _bind_methods() {};
+};
+
+
 
 class Binary : public Expr {
 	GDCLASS(Binary, Expr)
 public:
+	Expr* left;
+	Token* mOperator;
+	Expr* right;
+
 	Binary();
 	~Binary();
-	Binary(Expr iLeft, Token iOperator, Expr iRight) {
+	Binary(Expr* iLeft, Token* iOperator, Expr* iRight) {
 		left = iLeft;
-		operator = iOperator;
+		mOperator = iOperator;
 		right = iRight;
 	};
 
-	Expr left;
-	Token operator;
-	Expr right;
+	std::string accept(AstPrinter* printer);
+	//{
+	//	printer->visitBinaryExpr(this);
+	//}
 
-}
+
+protected:
+	static void _bind_methods() {};
+};
+
+
 
 class Grouping : public Expr {
 	GDCLASS(Grouping, Expr)
 public:
+	Expr* expression;
+
 	Grouping();
 	~Grouping();
-	Grouping(Expr iExpression) {
+	Grouping(Expr* iExpression) {
 		expression = iExpression;
 	};
 
-	Expr expression;
-}
+	std::string accept(AstPrinter* printer);
+	//{
+	//	printer->visitGroupingExpr(this);
+	//}
+
+
+protected:
+	static void _bind_methods() {};
+};
 
 class Literal : public Expr {
 	GDCLASS(Literal, Expr)
 public:
+	std::string value;
+
 	Literal();
 	~Literal();
 	Literal(std::string iValue) {
 		value = iValue;
 	};
 
-	std::string value;
-}
+	std::string accept(AstPrinter* printer);
+	//{
+	//	printer->visitLiteralExpr(this);
+	//}
+
+protected:
+	static void _bind_methods() {};
+};
 
 class Unary : public Expr {
 	GDCLASS(Unary, Expr)
 public:
+
+	Token* mOperator;
+	Expr* right;
+
 	Unary();
 	~Unary();
-	Unary(Token iOperator, Expr iRight) {
-		left = iLeft;
-		operator = iOperator;
+	Unary(Token* iOperator, Expr* iRight) {
+		mOperator = iOperator;
 		right = iRight;
 	};
 
-	Token operator;
-	Expr right;
-}
+	std::string accept(AstPrinter* printer);
+	//{
+	//	printer->visitUnaryExpr(this);
+	//}
+
+protected:
+	static void _bind_methods() {};
+};
 
 
 
 
+class AstPrinter : public Object {
+	GDCLASS(AstPrinter, Object)
+public:
+
+	AstPrinter();
+	~AstPrinter();
+
+	std::string print(Expr* iExpr)
+	{
+		return iExpr->accept(this);
+	}
+
+	std::string visitBinaryExpr(Binary* expr) {
+		return ("(" + expr->mOperator->lexeme + " " + print(expr->left) + " " + print(expr->right) + ")");
+	}
+
+	std::string visitGroupingExpr(Grouping* expr) {
+		return ("(group " + print(expr->expression) + ")");
+	}
+
+	std::string visitLiteralExpr(Literal* expr) {
+		if ( expr->value == "")
+		{
+			return "nil";
+		}
+		return expr->value;
+	}
+
+	std::string visitUnaryExpr(Unary* expr) {
+		return ("(" + expr->mOperator->lexeme + " " + print(expr->right) + ")");
+	}
+
+
+protected:
+	static void _bind_methods() {};
+};
 
 
 

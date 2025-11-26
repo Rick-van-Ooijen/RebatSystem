@@ -35,6 +35,11 @@ void RBInterpreter::main(String arg)
 
 	runFile(input);
 
+
+	// hack to create a syntax tree to print.
+	
+
+
 }
 
 
