@@ -69,7 +69,7 @@ public:
 	}
 
 	std::string toString() {
-		std::string output = ("line: " +std::to_string(line) + " type: " + TypeNames[type] + " lex: " + lexeme + " literal: " + literal);
+		std::string output = ("line: " +std::to_string(line) + "  type: " + TypeNames[type] + "   lex: " + lexeme + "   literal: " + literal);
 		return output;}
 
 protected:
@@ -143,11 +143,70 @@ std::unordered_map<std::string, int> keywords = {
 	};
 };
 
+class Expr : public Object {
+	GDCLASS(Expr, Object)
+public:
+	Expr();
+	~Expr();
 
 
+}
 
+class Binary : public Expr {
+	GDCLASS(Binary, Expr)
+public:
+	Binary();
+	~Binary();
+	Binary(Expr iLeft, Token iOperator, Expr iRight) {
+		left = iLeft;
+		operator = iOperator;
+		right = iRight;
+	};
 
+	Expr left;
+	Token operator;
+	Expr right;
 
+}
+
+class Grouping : public Expr {
+	GDCLASS(Grouping, Expr)
+public:
+	Grouping();
+	~Grouping();
+	Grouping(Expr iExpression) {
+		expression = iExpression;
+	};
+
+	Expr expression;
+}
+
+class Literal : public Expr {
+	GDCLASS(Literal, Expr)
+public:
+	Literal();
+	~Literal();
+	Literal(std::string iValue) {
+		value = iValue;
+	};
+
+	std::string value;
+}
+
+class Unary : public Expr {
+	GDCLASS(Unary, Expr)
+public:
+	Unary();
+	~Unary();
+	Unary(Token iOperator, Expr iRight) {
+		left = iLeft;
+		operator = iOperator;
+		right = iRight;
+	};
+
+	Token operator;
+	Expr right;
+}
 
 
 
