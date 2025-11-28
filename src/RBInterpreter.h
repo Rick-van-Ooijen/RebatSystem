@@ -148,10 +148,10 @@ class AstPrinter;
 class Expr : public Object {
 	GDCLASS(Expr, Object)
 public:
-	Expr();
-	~Expr();
+	Expr() {};
+	~Expr() {};
 
-	virtual std::string accept(AstPrinter* printer) {};
+	virtual std::string accept(AstPrinter* printer) {return "";};
 
 protected:
 	static void _bind_methods() {};
@@ -166,18 +166,16 @@ public:
 	Token* mOperator;
 	Expr* right;
 
-	Binary();
-	~Binary();
+	Binary() {};
+	~Binary() {};
 	Binary(Expr* iLeft, Token* iOperator, Expr* iRight) {
 		left = iLeft;
 		mOperator = iOperator;
 		right = iRight;
 	};
 
-	std::string accept(AstPrinter* printer);
-	//{
-	//	printer->visitBinaryExpr(this);
-	//}
+	std::string accept(AstPrinter* printer) override;
+
 
 
 protected:
@@ -191,16 +189,14 @@ class Grouping : public Expr {
 public:
 	Expr* expression;
 
-	Grouping();
-	~Grouping();
+	Grouping() {};
+	~Grouping() {};
 	Grouping(Expr* iExpression) {
 		expression = iExpression;
 	};
 
-	std::string accept(AstPrinter* printer);
-	//{
-	//	printer->visitGroupingExpr(this);
-	//}
+	std::string accept(AstPrinter* printer) override;
+
 
 
 protected:
@@ -212,16 +208,14 @@ class Literal : public Expr {
 public:
 	std::string value;
 
-	Literal();
-	~Literal();
+	Literal() {};
+	~Literal() {};
 	Literal(std::string iValue) {
 		value = iValue;
 	};
 
-	std::string accept(AstPrinter* printer);
-	//{
-	//	printer->visitLiteralExpr(this);
-	//}
+	std::string accept(AstPrinter* printer) override;
+
 
 protected:
 	static void _bind_methods() {};
@@ -234,17 +228,14 @@ public:
 	Token* mOperator;
 	Expr* right;
 
-	Unary();
-	~Unary();
+	Unary() {};
+	~Unary() {};
 	Unary(Token* iOperator, Expr* iRight) {
 		mOperator = iOperator;
 		right = iRight;
 	};
 
-	std::string accept(AstPrinter* printer);
-	//{
-	//	printer->visitUnaryExpr(this);
-	//}
+	std::string accept(AstPrinter* printer) override;
 
 protected:
 	static void _bind_methods() {};
@@ -257,8 +248,8 @@ class AstPrinter : public Object {
 	GDCLASS(AstPrinter, Object)
 public:
 
-	AstPrinter();
-	~AstPrinter();
+	AstPrinter() {};
+	~AstPrinter() {};
 
 	std::string print(Expr* iExpr)
 	{

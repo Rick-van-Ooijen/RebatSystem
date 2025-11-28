@@ -38,7 +38,14 @@ void RBInterpreter::main(String arg)
 
 	// hack to create a syntax tree to print.
 	
+	Binary expression = Binary(
+		new Unary(new Token(TokenType::T_MINUS, "-", "", 1), new Literal("123")),
+		new Token(TokenType::T_STAR, "*", "", 1),
+		new Grouping(new Literal("45.67")));
 
+	AstPrinter printer;
+	std::string text = printer.print(&expression);
+	UtilityFunctions::print(text.c_str());
 
 }
 
@@ -246,3 +253,27 @@ void Scanner::identifier()
 
 	addToken(type, text);
 }
+
+
+std::string Binary::accept(AstPrinter* printer)
+{
+	return printer->visitBinaryExpr(this);
+}
+
+std::string Grouping::accept(AstPrinter* printer)
+{
+	return printer->visitGroupingExpr(this);
+}
+
+std::string Literal::accept(AstPrinter* printer)
+{
+	return printer->visitLiteralExpr(this);
+}
+
+std::string Unary::accept(AstPrinter* printer)
+{
+	return printer->visitUnaryExpr(this);
+}
+
+
+
