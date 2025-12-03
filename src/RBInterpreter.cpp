@@ -36,16 +36,6 @@ void RBInterpreter::main(String arg)
 	runFile(input);
 
 
-	// hack to create a syntax tree to print.
-	
-	Binary expression = Binary(
-		new Unary(new Token(TokenType::T_MINUS, "-", "", 1), new Literal("123")),
-		new Token(TokenType::T_STAR, "*", "", 1),
-		new Grouping(new Literal("45.67")));
-
-	AstPrinter printer;
-	std::string text = printer.print(&expression);
-	UtilityFunctions::print(text.c_str());
 
 }
 
@@ -62,12 +52,26 @@ void RBInterpreter::runFile(std::string path)
 
 
 	Scanner scanner = Scanner(content, this);
-	std::vector<Token> tokens = scanner.scanTokens(content);
+	std::vector<Token*> tokens = scanner.scanTokens(content);
 
-	for(Token currentToken : tokens)
+	for(Token* currentToken : tokens)
 	{
-		UtilityFunctions::print(currentToken.toString().c_str());
+		UtilityFunctions::print((*currentToken).toString().c_str());
 	}
+
+	
+	Parser parser = Parser(tokens, this);
+
+	/*// hack to create a syntax tree to print.
+	
+	Binary expression = Binary(
+	new Unary(new Token(TokenType::T_MINUS, "-", "", 1), new Literal("123")),
+	new Token(TokenType::T_STAR, "*", "", 1),
+	new Grouping(new Literal("45.67")));*/
+
+	AstPrinter printer;
+	std::string text = printer.print(parser.parse());
+	UtilityFunctions::print(text.c_str());
 
 }
 
@@ -81,7 +85,7 @@ void RBInterpreter::reportError(int line, std::string message)
 }
 
 
-std::vector<Token> Scanner::scanTokens(std::string source)
+std::vector<Token*> Scanner::scanTokens(std::string source)
 {
 	// go through each character
 	while(current < source.length())
@@ -175,7 +179,7 @@ std::vector<Token> Scanner::scanTokens(std::string source)
 		start = current;
 	}
 
-	tokens.push_back(Token(TokenType::T_EOF, "", "", line));
+	tokens.push_back(new Token(TokenType::T_EOF, "", "", line));
 	return tokens;
 }
 
@@ -184,7 +188,7 @@ void Scanner::addToken(int type, std::string literal)
 {
 	std::string text = source.substr(start, (current - start));
 
-	tokens.push_back(Token(type, text, literal, line));
+	tokens.push_back( new Token(type, text, literal, line) );
 }
 
 void Scanner::string()
