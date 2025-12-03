@@ -303,157 +303,17 @@ public:
 		catch (int error) { synchronize(); return new Expr;  }
 	}
 
-	Expr* expression() {
-		return equality();
-	}
-
-	Expr* equality() {
-		Expr* expr = comparison();
-		while (match({TokenType::T_BANG_EQUAL, TokenType::T_EQUAL_EQUAL})) {
-			Token* lOperator = tokens[current-1];
-			Expr* right = comparison();
-			expr = new Binary(expr, lOperator, right);
-		}
-		return expr;
-	}
-
-	Expr* comparison() {
-		Expr* expr = term();
-		while (match( {TokenType::T_GREATER, TokenType::T_GREATER_EQUAL, TokenType::T_LESS, TokenType::T_LESS_EQUAL} )) {
-			Token* lOperator = tokens[current-1];
-			Expr* right = term();
-			expr = new Binary(expr, lOperator, right);
-		}
-		return expr;
-	}
-
-	Expr* term() { //addition or subtraction
-		Expr* expr = factor();
-		while (match( {TokenType::T_MINUS, TokenType::T_PLUS} )) {
-			Token* lOperator = tokens[current-1];
-			Expr* right = factor();
-			expr = new Binary(expr, lOperator, right);
-		}
-		return expr;
-	}
-
-	Expr* factor() { // multiplication or division
-		Expr* expr = unary();
-		while (match( {TokenType::T_SLASH, TokenType::T_STAR} )) {
-			Token* lOperator = tokens[current-1];
-			Expr* right = unary();
-			expr = new Binary(expr, lOperator, right);
-		}
-		return expr;
-	}
-
-	Expr* unary() {
-		if (match( {TokenType::T_BANG, TokenType::T_MINUS} )) {
-			Token* lOperator = tokens[current-1];
-			Expr* right = unary();
-			return new Unary(lOperator, right);
-		}
-		return primary();
-	}
-
-	Expr* primary() {
-		if (match({TokenType::T_FALSE})) {return new Literal("false");};
-		if (match({TokenType::T_TRUE})) {return new Literal("true");};
-		if (match({TokenType::T_NIL})) {return new Literal("nil");};
-
-		if (match({TokenType::T_NUMBER, TokenType::T_STRING})) {
-			return new Literal(tokens[current-1]->literal);
-		};
-
-		if (match({TokenType::T_LEFT_PAREN})) {
-			Expr* expr = new Expr;
-			consume(TokenType::T_RIGHT_PAREN, "Expected ')' after expression.");
-			return new Grouping(expr);
-		};
-
-		interpreter->reportError(tokens[current-1]->line, "Expected expression.");
-		throw 0;
-
-	}
-
-	void synchronize() {
-		current++;
-
-		while (current < tokens.size())
-		{
-			if (tokens[current-1]->type == TokenType::T_SEMICOLON)
-			{
-				return;
-			}
-
-			switch (tokens[current]->type)
-			{
-				case TokenType::T_CLASS:
-					return;
-					break;
-				case TokenType::T_FUN:
-					return;
-					break;
-				case TokenType::T_VAR:
-					return;
-					break;
-				case TokenType::T_FOR:
-					return;
-					break;
-				case TokenType::T_IF:
-					return;
-					break;
-				case TokenType::T_WHILE:
-					return;
-					break;
-				case TokenType::T_PRINT:
-					return;
-					break;
-				case TokenType::T_RETURN:
-					return;
-					break;;
-				default:
-				{
-					current++;
-				}
-			}
-		}
-	}
-
-
-	bool match(std::vector<int> types) {
-		for (int type : types) {
-			if (type == (tokens[current]->type)) {
-				current++;
-				return true;
-			}
-		}
-		return false;
-	}
-
-
-	Token* consume(int type, std::string message) {
-		if (tokens[current]->type == type) {current++; return tokens[current-1];}
-
-		error(tokens[current], message);
-
-	}
-
-	void error(Token* token, std::string message) {
-		std::string errorMessage = std::to_string(token->line);
-		if (token->type == TokenType::T_EOF) {
-			errorMessage += " at end";
-		}
-		else {
-			errorMessage += (" at '" + token->lexeme + "'");
-		}
-		errorMessage += message;
-
-		interpreter->reportError(token->line, errorMessage);
-
-
-	}
-
+	Expr* expression();
+	Expr* equality();
+	Expr* comparison();
+	Expr* term();
+	Expr* factor();
+	Expr* unary();
+	Expr* primary();
+	void synchronize();
+	bool match(std::vector<int> types);
+	Token* consume(int type, std::string message);
+	void error(Token* token, std::string message);
 	
 
 
