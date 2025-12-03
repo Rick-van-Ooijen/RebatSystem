@@ -6,6 +6,6 @@ varken
 for
 99.55
 "Hello,
-World!"
+World!
 // this won't be read
 -

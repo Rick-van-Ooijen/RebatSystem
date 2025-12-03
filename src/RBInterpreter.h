@@ -282,7 +282,47 @@ protected:
 };
 
 
+class Parser : public Object {
+	GDCLASS(Parser, Object)
+public:
 
+	Parser() {};
+	Parser(std::vector<Token> iTokens) { tokens = iTokens; };
+	~Parser() {};
+
+	std::vector<Token> tokens;
+	int current = 0;
+
+	Expr* expression() {
+		return equality();
+	}
+
+	Expr* equality() {
+		Expr* expr = new Expr;//comparison();
+		while (match(std::vector<int>(TokenType::T_BANG_EQUAL, TokenType::T_EQUAL_EQUAL))) {
+			Token* lOperator = &tokens[current-1];
+			Expr* right = new Expr;//comparison(); //we get later
+			expr = new Binary(expr, lOperator, right);
+		}
+		return expr;
+	}
+
+
+	bool match(std::vector<int> types) {
+		for (int type : types) {
+			if (type == (tokens[current].type)) {
+				current++;
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+
+protected:
+	static void _bind_methods() {};
+};
 
 
 
