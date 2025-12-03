@@ -300,7 +300,7 @@ public:
 		{
 			expression();
 		}
-		catch (int error) { return new Expr; }
+		catch (int error) { synchronize(); return new Expr;  }
 	}
 
 	Expr* expression() {
@@ -327,7 +327,7 @@ public:
 		return expr;
 	}
 
-	Expr* term() {
+	Expr* term() { //addition or subtraction
 		Expr* expr = factor();
 		while (match( {TokenType::T_MINUS, TokenType::T_PLUS} )) {
 			Token* lOperator = tokens[current-1];
@@ -337,7 +337,7 @@ public:
 		return expr;
 	}
 
-	Expr* factor() {
+	Expr* factor() { // multiplication or division
 		Expr* expr = unary();
 		while (match( {TokenType::T_SLASH, TokenType::T_STAR} )) {
 			Token* lOperator = tokens[current-1];
@@ -416,15 +416,8 @@ public:
 				{
 					current++;
 				}
-
 			}
-
 		}
-
-
-
-
-
 	}
 
 

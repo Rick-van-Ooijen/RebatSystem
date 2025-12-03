@@ -1,0 +1,6 @@
+1/+
+
+//4 + -1 / "varken" == "varken" >= true - ();
+//-1 / () == "appelflap" -/-+ 1;
+//"string!" + "world";
+//7+7;
