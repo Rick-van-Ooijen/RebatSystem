@@ -252,30 +252,22 @@ public:
 	~AstPrinter() {};
 
 	std::string print(Expr* iExpr)
-	{
-		return iExpr->accept(this);
-	}
+	{ return iExpr->accept(this);}
 
-	std::string visitBinaryExpr(Binary* expr) {
-		return ("(" + expr->mOperator->lexeme + " " + print(expr->left) + " " + print(expr->right) + ")");
-	}
+	std::string visitBinaryExpr(Binary* expr)
+		{return ("(" + expr->mOperator->lexeme + " " + print(expr->left) + " " + print(expr->right) + ")");}
 
-	std::string visitGroupingExpr(Grouping* expr) {
-		return ("(group " + print(expr->expression) + ")");
-	}
+	std::string visitGroupingExpr(Grouping* expr)
+	{return ("(group " + print(expr->expression) + ")");}
 
 	std::string visitLiteralExpr(Literal* expr) {
 		if ( expr->value == "")
-		{
-			return "nil";
-		}
+			{return "nil";}
 		return expr->value;
 	}
 
-	std::string visitUnaryExpr(Unary* expr) {
-		return ("(" + expr->mOperator->lexeme + " " + print(expr->right) + ")");
-	}
-
+	std::string visitUnaryExpr(Unary* expr)
+	{return ("(" + expr->mOperator->lexeme + " " + print(expr->right) + ")");}
 
 protected:
 	static void _bind_methods() {};
@@ -314,15 +306,10 @@ public:
 	bool match(std::vector<int> types);
 	Token* consume(int type, std::string message);
 	void error(Token* token, std::string message);
-	
-
-
 
 protected:
 	static void _bind_methods() {};
 };
-
-
 
 
 
