@@ -2,6 +2,8 @@
 
 #include "gdexample.h"
 #include "RBInterpreter.h"
+#include "printer.h"
+#include "parser.h"
 
 #include <gdextension_interface.h>
 #include <godot_cpp/core/defs.hpp>
