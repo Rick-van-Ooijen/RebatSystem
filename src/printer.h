@@ -20,6 +20,7 @@ public:
 	~Expr() {};
 
 	virtual std::string accept(AstPrinter* printer) {return "";};
+	virtual std::string accept(RBInterpreter* interpreter) {return "";};
 
 protected:
 	static void _bind_methods() {};
@@ -43,8 +44,7 @@ public:
 	};
 
 	std::string accept(AstPrinter* printer) override;
-
-
+	std::string accept(RBInterpreter* interpreter) override;
 
 protected:
 	static void _bind_methods() {};
@@ -64,6 +64,7 @@ public:
 	};
 
 	std::string accept(AstPrinter* printer) override;
+	std::string accept(RBInterpreter* interpreter) override;
 
 
 
@@ -83,6 +84,7 @@ public:
 	};
 
 	std::string accept(AstPrinter* printer) override;
+	std::string accept(RBInterpreter* interpreter) override;
 
 
 protected:
@@ -104,6 +106,7 @@ public:
 	};
 
 	std::string accept(AstPrinter* printer) override;
+	std::string accept(RBInterpreter* interpreter) override;
 
 protected:
 	static void _bind_methods() {};

@@ -8,6 +8,12 @@
 
 namespace godot {
 
+class Expr;
+class Binary;
+class Grouping;
+class Literal;
+class Unary;
+
 class RBInterpreter : public Node {
 	GDCLASS(RBInterpreter, Node)
 	
@@ -29,6 +35,53 @@ class RBInterpreter : public Node {
 	//see if this is needed in cpp, otherwise remove
 	void main(String arg);
 	void run(std::string input);
+
+
+	std::string evaluate(Expr* expr);
+
+	std::string print(Expr* iExpr);
+
+	std::string visitBinaryExpr(Binary* expr);
+
+	std::string visitGroupingExpr(Grouping* expr);
+
+	std::string visitLiteralExpr(Literal* expr);
+
+	std::string visitUnaryExpr(Unary* expr);
+
+	bool isTrue(Expr* expr);
+
+	bool isNum(std::string input) {
+		bool hasDot = false;
+
+		for (char ch : input) {
+			if (!(isdigit(ch) == 0))
+			{
+				if(ch == '.')
+				{
+					if (hasDot)
+					{return false;}
+
+					hasDot = true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+
+		}
+		return true;
+	}
+	
+
+	std::string boolToStr(bool input) {
+		if (input)
+			{return "true";}
+		else
+			{return "false";}
+	};
+
 };
 
 
