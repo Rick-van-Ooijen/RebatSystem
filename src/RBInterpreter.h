@@ -53,11 +53,14 @@ class RBInterpreter : public Node {
 
 	bool isNum(std::string input) {
 		bool hasDot = false;
+		bool couldHaveMinus = true;
 
 		for (char ch : input) {
-			if (!(isdigit(ch) == 0))
+			if (!(isdigit(ch)))
 			{
-				if(ch == '.')
+
+				// check for dots.
+				if((ch == '.') && !(ch == '-' && couldHaveMinus))
 				{
 					if (hasDot)
 					{return false;}
@@ -66,9 +69,16 @@ class RBInterpreter : public Node {
 				}
 				else
 				{
-					return false;
+					// if it's a '-' at the start, that's still a valid number
+					if(!(ch == '-' && couldHaveMinus))
+					{
+						return false;
+					}
 				}
+
 			}
+
+			couldHaveMinus = false;
 
 		}
 		return true;

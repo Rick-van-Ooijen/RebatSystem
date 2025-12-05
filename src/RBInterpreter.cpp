@@ -71,9 +71,13 @@ void RBInterpreter::runFile(std::string path)
 	new Token(TokenType::T_STAR, "*", "", 1),
 	new Grouping(new Literal("45.67")));*/
 
-	AstPrinter printer;
-	std::string text = printer.print(parser.parse());
-	UtilityFunctions::print(text.c_str());
+	//AstPrinter printer;
+	//std::string text = printer.print(parser.parse());
+	//UtilityFunctions::print(text.c_str());
+
+
+	std::string output = evaluate(parser.parse());
+	UtilityFunctions::print(output.c_str());
 
 }
 
@@ -139,7 +143,7 @@ std::string RBInterpreter::visitBinaryExpr(Binary* expr)
 
 			if (areNumbers)
 			{
-				double result = std::stod(left) - std::stod(right);
+				double result = std::stod(left) + std::stod(right);
 				return std::to_string(result);
 			}
 			else
