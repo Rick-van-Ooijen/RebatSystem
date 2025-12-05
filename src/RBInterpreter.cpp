@@ -105,6 +105,10 @@ std::string RBInterpreter::visitBinaryExpr(Binary* expr)
 				double result = stod(left) - stod(right);
 				return std::to_string(result);
 			}
+			else
+			{
+				reportError(expr->mOperator->line, "Operand must be a number.");
+			}
 		} break;
 		case TokenType::T_SLASH:
 		{
@@ -113,6 +117,10 @@ std::string RBInterpreter::visitBinaryExpr(Binary* expr)
 				double result = stod(left) / stod(right);
 				return std::to_string(result);
 			}
+			else
+			{
+				reportError(expr->mOperator->line, "Operand must be a number.");
+			}
 		} break;
 		case TokenType::T_STAR:
 		{
@@ -120,6 +128,10 @@ std::string RBInterpreter::visitBinaryExpr(Binary* expr)
 			{
 				double result = stod(left) * stod(right);
 				return std::to_string(result);
+			}
+			else
+			{
+				reportError(expr->mOperator->line, "Operand must be a number.");
 			}
 		} break;
 		case TokenType::T_PLUS:
@@ -143,6 +155,10 @@ std::string RBInterpreter::visitBinaryExpr(Binary* expr)
 				bool result = (std::stod(left) > std::stod(right));
 				return boolToStr(result);
 			}
+			else
+			{
+				reportError(expr->mOperator->line, "Operand must be a number.");
+			}
 		} break;
 		case TokenType::T_GREATER_EQUAL:
 		{
@@ -150,6 +166,10 @@ std::string RBInterpreter::visitBinaryExpr(Binary* expr)
 			{
 				bool result = (std::stod(left) >= std::stod(right));
 				return boolToStr(result);
+			}
+			else
+			{
+				reportError(expr->mOperator->line, "Operand must be a number.");
 			}
 		} break;
 		case TokenType::T_LESS:
@@ -159,6 +179,10 @@ std::string RBInterpreter::visitBinaryExpr(Binary* expr)
 				bool result = (std::stod(left) < std::stod(right));
 				return boolToStr(result);
 			}
+			else
+			{
+				reportError(expr->mOperator->line, "Operand must be a number.");
+			}
 		} break;
 		case TokenType::T_LESS_EQUAL:
 		{
@@ -166,6 +190,10 @@ std::string RBInterpreter::visitBinaryExpr(Binary* expr)
 			{
 				bool result = (std::stod(left) <= std::stod(right));
 				return boolToStr(result);
+			}
+			else
+			{
+				reportError(expr->mOperator->line, "Operand must be a number.");
 			}
 		} break;
 		case TokenType::T_BANG_EQUAL:
