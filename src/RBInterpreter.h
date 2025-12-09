@@ -13,6 +13,7 @@ class Binary;
 class Grouping;
 class Literal;
 class Unary;
+class Stmt;
 
 class RBInterpreter : public Node {
 	GDCLASS(RBInterpreter, Node)
@@ -48,6 +49,10 @@ class RBInterpreter : public Node {
 	std::string visitLiteralExpr(Literal* expr);
 
 	std::string visitUnaryExpr(Unary* expr);
+
+	std::string visitExpression(Stmt* stmt);
+
+	std::string visitPrint(Stmt* stmt);
 
 	bool isTrue(Expr* expr);
 
@@ -93,7 +98,6 @@ class RBInterpreter : public Node {
 	};
 
 };
-
 
 
 

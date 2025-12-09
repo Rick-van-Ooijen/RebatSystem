@@ -154,3 +154,11 @@ void Parser::error(Token* token, std::string message) {
 	interpreter->reportError(token->line, errorMessage);
 }
 
+std::string Expression::accept(RBInterpreter* interpreter)
+{
+	return interpreter->visitExpression(this);
+}
+std::string Print::accept(RBInterpreter* interpreter)
+{
+	return interpreter->visitPrint(this);
+}

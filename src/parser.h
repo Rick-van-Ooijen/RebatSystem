@@ -9,6 +9,59 @@
 
 namespace godot {
 
+class Stmt : public Object {
+	GDCLASS(Stmt, Object)
+public:
+	Expr* expression;
+
+	Stmt() {};
+	~Stmt() {};
+
+	virtual std::string accept(RBInterpreter* interpreter) {return "";};
+
+
+protected:
+	static void _bind_methods() {};
+};
+
+
+
+class Expression : public Stmt {
+	GDCLASS(Expression, Stmt)
+public:
+	Expr* expression;
+
+	Expression() {};
+	~Expression() {};
+	Expression(Expr* iExpression) {
+		expression = iExpression;
+	};
+
+	std::string accept(RBInterpreter* interpreter) override;
+
+protected:
+	static void _bind_methods() {};
+};
+
+class Print : public Stmt {
+	GDCLASS(Print, Stmt)
+public:
+	Expr* expression;
+
+	Print() {};
+	~Print() {};
+	Print(Expr* iExpression) {
+		expression = iExpression;
+	};
+
+	std::string accept(RBInterpreter* interpreter) override;
+
+protected:
+	static void _bind_methods() {};
+};
+
+
+
 
 class Parser : public Object {
 	GDCLASS(Parser, Object)
@@ -23,13 +76,50 @@ public:
 
 	int current = 0;
 
-	Expr* parse() {
+	std::vector<Stmt*> parse()
+	{
+		std::vector<Stmt*> statements;
+		while (current < tokens.size()) {
+
+			try
+			{
+				statements.push_back(statement());
+			}
+			catch (int error) { synchronize(); }
+
+		}
+
+
+
+		return statements;
+	};
+
+	Stmt* statement() {
+		if (match({TokenType::T_PRINT}))
+		{ return printStatement(); }
+
+		return expressionStatement();
+	}
+
+	Stmt* printStatement() {
+		Expr* value = expression();
+		consume(TokenType::T_SEMICOLON, "Expect ';' after value.");
+		return new Print(value);
+	}
+
+	Stmt* expressionStatement() {
+		Expr* value = expression();
+		consume(TokenType::T_SEMICOLON, "Expect ';' after value.");
+		return new Expression(value);
+	}
+
+/*	Expr* parse() {
 		try
 		{
 			expression();
 		}
 		catch (int error) { synchronize(); return new Expr;  }
-	}
+	}*/
 
 	Expr* expression();
 	Expr* equality();
