@@ -64,13 +64,6 @@ void RBInterpreter::runFile(std::string path)
 	
 	Parser parser = Parser(tokens, this);
 
-	/*// hack to create a syntax tree to print.
-	
-	Binary expression = Binary(
-	new Unary(new Token(TokenType::T_MINUS, "-", "", 1), new Literal("123")),
-	new Token(TokenType::T_STAR, "*", "", 1),
-	new Grouping(new Literal("45.67")));*/
-
 	//AstPrinter printer;
 	//std::string text = printer.print(parser.parse());
 	//UtilityFunctions::print(text.c_str());
@@ -80,8 +73,6 @@ void RBInterpreter::runFile(std::string path)
 
 	//evaluate(parser.parse());
 	std::string output = "statements:" + std::to_string(statements.size());
-
-	int i = 0;
 	
 	for (Stmt* statement : statements)
 	{
@@ -89,10 +80,7 @@ void RBInterpreter::runFile(std::string path)
 		{
 			std::string text = statement->accept(this);
 			output = output + "\n" + text;
-			//UtilityFunctions::print(text.c_str());
 		}
-		//UtilityFunctions::print(std::to_string(i).c_str());
-		i++;
 	}
 
 	UtilityFunctions::print(output.c_str());
@@ -113,8 +101,7 @@ std::string RBInterpreter::evaluate(Expr* expr)
 	if (expr != nullptr)
 	{
 		std::string newString = expr->acceptI(this);
-		//return expr->banana();
-		return newString;//expr->acceptI(this); //BAD HERE
+		return newString;
 	}
 	else
 	{
@@ -275,6 +262,11 @@ std::string RBInterpreter::visitUnaryExpr(Unary* expr)
 	return "";
 }
 
+std::string RBInterpreter::visitVariableExpr(Variable* expr)
+{
+	return "";
+}
+
 bool RBInterpreter::isTrue(Expr* expr)
 {
 	if (expr == nullptr)
@@ -306,4 +298,9 @@ std::string RBInterpreter::visitPrint(Stmt* stmt)
 	std::string output = evaluate(stmt->expression);
 	UtilityFunctions::print(output.c_str());
 	return output;
+}
+
+std::string RBInterpreter::visitVar(Stmt* stmt)
+{
+	return evaluate(stmt->expression);
 }

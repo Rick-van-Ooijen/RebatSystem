@@ -15,7 +15,7 @@ std::vector<Stmt*> Parser::parse()
 
 		try
 		{
-			Stmt* stmt = statement();
+			Stmt* stmt = declaration();
 			if (stmt != nullptr)
 			{
 				statements.push_back(stmt);
@@ -94,6 +94,10 @@ Expr* Parser::primary() {
 	if (match({TokenType::T_NUMBER, TokenType::T_STRING})) {
 		return new Literal(tokens[current-1]->literal);
 	};
+
+	if (match({TokenType::T_IDENTIFIER})) {
+		return new Variable(tokens[current-1]);
+	}
 
 	if (match({TokenType::T_LEFT_PAREN})) {
 		Expr* expr = new Expr;
@@ -190,4 +194,9 @@ std::string Expression::accept(RBInterpreter* interpreter)
 std::string Print::accept(RBInterpreter* interpreter)
 {
 	return interpreter->visitPrint(this);
+}
+
+std::string Var::accept(RBInterpreter* interpreter)
+{
+	return interpreter->visitVar(this);
 }

@@ -58,6 +58,23 @@ protected:
 	static void _bind_methods() {};
 };
 
+class Var : public Stmt {
+	GDCLASS(Var, Stmt)
+public:
+	Token* name;
+
+	Var() {};
+	~Var() {};
+	Var(Expr* iExpression, Token* iName) {
+		expression = iExpression;
+		name = iName;
+	};
+
+	std::string accept(RBInterpreter* interpreter) override;
+
+protected:
+	static void _bind_methods() {};
+};
 
 
 
@@ -76,6 +93,26 @@ public:
 
 	std::vector<Stmt*> parse();
 
+	Stmt* declaration() {
+		if (match({TokenType::T_VAR}))
+			{ return varDeclaration(); }
+		
+		return statement();
+	}
+
+	Stmt* varDeclaration()
+	{
+		Token* name = consume(TokenType::T_IDENTIFIER, "Expect variable name.");
+
+		Expr* initializer;
+		if (match({TokenType::T_EQUAL})) {
+			initializer = expression();
+		}
+
+		consume(TokenType::T_SEMICOLON, "Expect ';' after variable declaration.");
+		return new Var(initializer, name);
+	}
+	
 	Stmt* statement() {
 		if (match({TokenType::T_PRINT}))
 		{ return printStatement(); }
@@ -94,14 +131,6 @@ public:
 		consume(TokenType::T_SEMICOLON, "Expect ';' after value.");
 		return new Expression(value);
 	}
-
-/*	Expr* parse() {
-		try
-		{
-			expression();
-		}
-		catch (int error) { synchronize(); return new Expr;  }
-	}*/
 
 	Expr* expression();
 	Expr* equality();

@@ -13,6 +13,7 @@ class Binary;
 class Grouping;
 class Literal;
 class Unary;
+class Variable;
 class Stmt;
 
 class RBInterpreter : public Node {
@@ -50,9 +51,13 @@ class RBInterpreter : public Node {
 
 	std::string visitUnaryExpr(Unary* expr);
 
+	std::string visitVariableExpr(Variable* expr);
+
 	std::string visitExpression(Stmt* stmt);
 
 	std::string visitPrint(Stmt* stmt);
+
+	std::string visitVar(Stmt* stmt);
 
 	bool isTrue(Expr* expr);
 

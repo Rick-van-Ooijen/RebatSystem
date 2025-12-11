@@ -19,7 +19,6 @@ public:
 	Expr() {};
 	~Expr() {};
 
-	virtual std::string banana() {return "banana";};
 	virtual std::string accept(AstPrinter* printer) {return "";};
 	virtual std::string acceptI(RBInterpreter* interpreter) {return "";};
 
@@ -113,7 +112,24 @@ protected:
 	static void _bind_methods() {};
 };
 
+class Variable : public Expr {
+	GDCLASS(Variable, Expr)
+public:
 
+	Token* name;
+
+	Variable() {};
+	~Variable() {};
+	Variable(Token* iName) {
+		name = iName;
+	};
+
+	std::string accept(AstPrinter* printer) override;
+	std::string acceptI(RBInterpreter* interpreter) override;
+
+protected:
+	static void _bind_methods() {};
+};
 
 
 class AstPrinter : public Object {
@@ -140,6 +156,9 @@ public:
 
 	std::string visitUnaryExpr(Unary* expr)
 	{return ("(" + expr->mOperator->lexeme + " " + print(expr->right) + ")");}
+
+	std::string visitVariableExpr(Variable* expr)
+	{return "";}
 
 protected:
 	static void _bind_methods() {};

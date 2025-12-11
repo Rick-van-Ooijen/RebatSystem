@@ -29,6 +29,10 @@ std::string Unary::accept(AstPrinter* printer)
 	return printer->visitUnaryExpr(this);
 }
 
+std::string Variable::accept(AstPrinter* printer)
+{
+	return printer->visitVariableExpr(this);
+}
 
 // for the interpreter
 std::string Binary::acceptI(RBInterpreter* interpreter)
@@ -49,4 +53,9 @@ std::string Literal::acceptI(RBInterpreter* interpreter)
 std::string Unary::acceptI(RBInterpreter* interpreter)
 {
 	return interpreter->visitUnaryExpr(this);
+}
+
+std::string Variable::acceptI(RBInterpreter* interpreter)
+{
+	return interpreter->visitVariableExpr(this);
 }
