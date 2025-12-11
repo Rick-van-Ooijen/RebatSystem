@@ -89,9 +89,9 @@ void RBInterpreter::runFile(std::string path)
 		{
 			std::string text = statement->accept(this);
 			output = output + "\n" + text;
-			UtilityFunctions::print(text.c_str());
+			//UtilityFunctions::print(text.c_str());
 		}
-		UtilityFunctions::print(std::to_string(i).c_str());
+		//UtilityFunctions::print(std::to_string(i).c_str());
 		i++;
 	}
 

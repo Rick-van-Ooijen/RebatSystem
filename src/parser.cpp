@@ -23,8 +23,8 @@ std::vector<Stmt*> Parser::parse()
 		}
 		catch (int error) { synchronize(); }
 
-		UtilityFunctions::print(("current: " + std::to_string(current)).c_str());
-		UtilityFunctions::print(("tokens size: " + std::to_string(tokens.size())).c_str());
+		//UtilityFunctions::print(("current: " + std::to_string(current)).c_str());
+		//UtilityFunctions::print(("tokens size: " + std::to_string(tokens.size())).c_str());
 
 	}
 
@@ -101,7 +101,10 @@ Expr* Parser::primary() {
 		return new Grouping(expr);
 	};
 
-	interpreter->reportError(tokens[current-1]->line, "Expected expression.");	// HERE
+	if (current < (tokens.size()-1))
+	{
+		interpreter->reportError(tokens[current-1]->line, "Expected expression.");
+	}
 	throw 0;
 
 
