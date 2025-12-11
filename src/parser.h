@@ -29,7 +29,6 @@ protected:
 class Expression : public Stmt {
 	GDCLASS(Expression, Stmt)
 public:
-	Expr* expression;
 
 	Expression() {};
 	~Expression() {};
@@ -46,7 +45,6 @@ protected:
 class Print : public Stmt {
 	GDCLASS(Print, Stmt)
 public:
-	Expr* expression;
 
 	Print() {};
 	~Print() {};
@@ -76,23 +74,7 @@ public:
 
 	int current = 0;
 
-	std::vector<Stmt*> parse()
-	{
-		std::vector<Stmt*> statements;
-		while (current < tokens.size()) {
-
-			try
-			{
-				statements.push_back(statement());
-			}
-			catch (int error) { synchronize(); }
-
-		}
-
-
-
-		return statements;
-	};
+	std::vector<Stmt*> parse();
 
 	Stmt* statement() {
 		if (match({TokenType::T_PRINT}))

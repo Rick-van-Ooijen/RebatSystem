@@ -8,6 +8,31 @@
 
 using namespace godot;
 
+std::vector<Stmt*> Parser::parse()
+{
+	std::vector<Stmt*> statements;
+	while (current < tokens.size()) {
+
+		try
+		{
+			Stmt* stmt = statement();
+			if (stmt != nullptr)
+			{
+				statements.push_back(stmt);
+			}
+		}
+		catch (int error) { synchronize(); }
+
+		UtilityFunctions::print(("current: " + std::to_string(current)).c_str());
+		UtilityFunctions::print(("tokens size: " + std::to_string(tokens.size())).c_str());
+
+	}
+
+
+
+	return statements;
+}
+
 Expr* Parser::expression() {
 	return equality();
 }
@@ -76,8 +101,9 @@ Expr* Parser::primary() {
 		return new Grouping(expr);
 	};
 
-	interpreter->reportError(tokens[current-1]->line, "Expected expression.");
+	interpreter->reportError(tokens[current-1]->line, "Expected expression.");	// HERE
 	throw 0;
+
 
 }
 
@@ -138,7 +164,7 @@ bool Parser::match(std::vector<int> types) {
 Token* Parser::consume(int type, std::string message) {
 	if (tokens[current]->type == type) {current++; return tokens[current-1];}
 	error(tokens[current], message);
-
+	
 }
 
 void Parser::error(Token* token, std::string message) {

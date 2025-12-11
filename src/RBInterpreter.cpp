@@ -79,13 +79,20 @@ void RBInterpreter::runFile(std::string path)
 	std::vector<Stmt*> statements = parser.parse();
 
 	//evaluate(parser.parse());
-	std::string output = "";
+	std::string output = "statements:" + std::to_string(statements.size());
+
+	int i = 0;
+	
 	for (Stmt* statement : statements)
 	{
 		if (statement != nullptr)
 		{
-			output = output + "\n" + statement->accept(this);
+			std::string text = statement->accept(this);
+			output = output + "\n" + text;
+			UtilityFunctions::print(text.c_str());
 		}
+		UtilityFunctions::print(std::to_string(i).c_str());
+		i++;
 	}
 
 	UtilityFunctions::print(output.c_str());
@@ -105,13 +112,15 @@ std::string RBInterpreter::evaluate(Expr* expr)
 {
 	if (expr != nullptr)
 	{
-		return expr->accept(this);
+		std::string newString = expr->acceptI(this);
+		//return expr->banana();
+		return newString;//expr->acceptI(this); //BAD HERE
 	}
 	else
 	{
 		UtilityFunctions::print("expr == nullptr");
-		return nullptr;
 	}
+	return "";
 }
 
 std::string RBInterpreter::visitBinaryExpr(Binary* expr)
@@ -288,13 +297,13 @@ bool RBInterpreter::isTrue(Expr* expr)
 
 std::string RBInterpreter::visitExpression(Stmt* stmt)
 {
-	return "";//evaluate(stmt->expression); //BAD HERE
+	return evaluate(stmt->expression);
 }
 
 
 std::string RBInterpreter::visitPrint(Stmt* stmt)
 {
-	//std::string output = evaluate(stmt->expression);
-	//UtilityFunctions::print(output.c_str());
-	return "";//output;
+	std::string output = evaluate(stmt->expression);
+	UtilityFunctions::print(output.c_str());
+	return output;
 }

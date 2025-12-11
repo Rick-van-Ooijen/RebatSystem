@@ -31,22 +31,22 @@ std::string Unary::accept(AstPrinter* printer)
 
 
 // for the interpreter
-std::string Binary::accept(RBInterpreter* interpreter)
+std::string Binary::acceptI(RBInterpreter* interpreter)
 {
 	return interpreter->visitBinaryExpr(this);
 }
 
-std::string Grouping::accept(RBInterpreter* interpreter)
+std::string Grouping::acceptI(RBInterpreter* interpreter)
 {
 	return interpreter->visitGroupingExpr(this);
 }
 
-std::string Literal::accept(RBInterpreter* interpreter)
+std::string Literal::acceptI(RBInterpreter* interpreter)
 {
 	return interpreter->visitLiteralExpr(this);
 }
 
-std::string Unary::accept(RBInterpreter* interpreter)
+std::string Unary::acceptI(RBInterpreter* interpreter)
 {
 	return interpreter->visitUnaryExpr(this);
 }

@@ -19,8 +19,9 @@ public:
 	Expr() {};
 	~Expr() {};
 
+	virtual std::string banana() {return "banana";};
 	virtual std::string accept(AstPrinter* printer) {return "";};
-	virtual std::string accept(RBInterpreter* interpreter) {return "";};
+	virtual std::string acceptI(RBInterpreter* interpreter) {return "";};
 
 protected:
 	static void _bind_methods() {};
@@ -44,7 +45,7 @@ public:
 	};
 
 	std::string accept(AstPrinter* printer) override;
-	std::string accept(RBInterpreter* interpreter) override;
+	std::string acceptI(RBInterpreter* interpreter) override;
 
 protected:
 	static void _bind_methods() {};
@@ -64,7 +65,7 @@ public:
 	};
 
 	std::string accept(AstPrinter* printer) override;
-	std::string accept(RBInterpreter* interpreter) override;
+	std::string acceptI(RBInterpreter* interpreter) override;
 
 
 
@@ -84,7 +85,7 @@ public:
 	};
 
 	std::string accept(AstPrinter* printer) override;
-	std::string accept(RBInterpreter* interpreter) override;
+	std::string acceptI(RBInterpreter* interpreter) override;
 
 
 protected:
@@ -106,7 +107,7 @@ public:
 	};
 
 	std::string accept(AstPrinter* printer) override;
-	std::string accept(RBInterpreter* interpreter) override;
+	std::string acceptI(RBInterpreter* interpreter) override;
 
 protected:
 	static void _bind_methods() {};
