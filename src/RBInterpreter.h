@@ -15,6 +15,28 @@ class Literal;
 class Unary;
 class Variable;
 class Stmt;
+class Token;
+
+class Environment :  public Object {
+	GDCLASS(Environment, Object)
+
+public:
+	Environment() {};
+	~Environment() {};
+
+	std::unordered_map<std::string, std::string> values;
+
+	std::string get(Token* name);
+
+	void define(std::string name, std::string value)
+	{
+		values.insert_or_assign(name, value);
+	}
+
+protected:
+	static void _bind_methods() {};
+};
+
 
 class RBInterpreter : public Node {
 	GDCLASS(RBInterpreter, Node)

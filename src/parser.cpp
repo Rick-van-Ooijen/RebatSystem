@@ -28,8 +28,6 @@ std::vector<Stmt*> Parser::parse()
 
 	}
 
-
-
 	return statements;
 }
 

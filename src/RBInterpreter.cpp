@@ -304,3 +304,18 @@ std::string RBInterpreter::visitVar(Stmt* stmt)
 {
 	return evaluate(stmt->expression);
 }
+
+std::string Environment::get(Token* name)
+{
+	auto found = values.find(name->literal);
+
+	if (found != values.end())
+	{
+		return (found->second);
+	}
+
+	std::string newText = ("Line (" + std::to_string(name->line) + ") ERROR: Undefined variable '" + name->lexeme + "'.");
+	UtilityFunctions::print(newText.c_str());
+	throw 0;
+
+}
