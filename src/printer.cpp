@@ -34,6 +34,11 @@ std::string Variable::accept(AstPrinter* printer)
 	return printer->visitVariableExpr(this);
 }
 
+std::string Assign::accept(AstPrinter* printer)
+{
+	return printer->visitAssignExpr(this);
+}
+
 // for the interpreter
 std::string Binary::acceptI(RBInterpreter* interpreter)
 {
@@ -58,4 +63,9 @@ std::string Unary::acceptI(RBInterpreter* interpreter)
 std::string Variable::acceptI(RBInterpreter* interpreter)
 {
 	return interpreter->visitVariableExpr(this);
+}
+
+std::string Assign::acceptI(RBInterpreter* interpreter)
+{
+	return interpreter->visitAssignExpr(this);
 }

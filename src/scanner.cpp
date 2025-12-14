@@ -174,7 +174,7 @@ void Scanner::identifier()
 	
 	// find the correct type based on keyword
 	int type = keywords.find(text)->second;
-	if (type >= 39)
+	if ((type >= TokenType::T_EOF) || (type <= TokenType::T_LESS_EQUAL))
 	{
 		type = TokenType::T_IDENTIFIER;
 	}

@@ -242,6 +242,19 @@ std::string RBInterpreter::visitLiteralExpr(Literal* expr)
 	return expr->value;
 }
 
+std::string RBInterpreter::visitAssignExpr(Assign* expr)
+{
+	std::string value = evaluate(expr->value);
+
+	if(environment.assign(expr->name->literal, value))
+	{
+		return value;
+	}
+
+	reportError(expr->name->line, ("Undefined variable '" + expr->name->lexeme + "'."));
+	return "";
+}
+
 std::string RBInterpreter::visitUnaryExpr(Unary* expr)
 {
 	std::string right = evaluate(expr->right);
@@ -262,9 +275,11 @@ std::string RBInterpreter::visitUnaryExpr(Unary* expr)
 	return "";
 }
 
+
+
 std::string RBInterpreter::visitVariableExpr(Variable* expr)
 {
-	return "";
+	return environment.get(expr->name);
 }
 
 bool RBInterpreter::isTrue(Expr* expr)
@@ -300,9 +315,18 @@ std::string RBInterpreter::visitPrint(Stmt* stmt)
 	return output;
 }
 
-std::string RBInterpreter::visitVar(Stmt* stmt)
+std::string RBInterpreter::visitVar(Var* stmt)
 {
-	return evaluate(stmt->expression);
+	std::string value = "";
+
+	if(stmt->expression != nullptr)
+	{
+		value = evaluate(stmt->expression);
+	}
+
+	environment.define(stmt->name->lexeme, value);
+
+	return "";
 }
 
 std::string Environment::get(Token* name)
@@ -316,6 +340,6 @@ std::string Environment::get(Token* name)
 
 	std::string newText = ("Line (" + std::to_string(name->line) + ") ERROR: Undefined variable '" + name->lexeme + "'.");
 	UtilityFunctions::print(newText.c_str());
-	throw 0;
+	return "";
 
 }

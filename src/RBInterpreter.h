@@ -12,10 +12,12 @@ class Expr;
 class Binary;
 class Grouping;
 class Literal;
+class Assign;
 class Unary;
 class Variable;
 class Stmt;
 class Token;
+class Var;
 
 class Environment :  public Object {
 	GDCLASS(Environment, Object)
@@ -33,6 +35,19 @@ public:
 		values.insert_or_assign(name, value);
 	}
 
+	bool assign(std::string name, std::string value)
+	{
+		if (values.find(name) != values.end())
+		{
+			values.insert_or_assign(name, value);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 protected:
 	static void _bind_methods() {};
 };
@@ -43,6 +58,7 @@ class RBInterpreter : public Node {
 	
 	private:
 	
+	Environment environment;
 	
 	protected:
 	static void _bind_methods();
@@ -71,6 +87,8 @@ class RBInterpreter : public Node {
 
 	std::string visitLiteralExpr(Literal* expr);
 
+	std::string visitAssignExpr(Assign* expr);
+
 	std::string visitUnaryExpr(Unary* expr);
 
 	std::string visitVariableExpr(Variable* expr);
@@ -79,7 +97,7 @@ class RBInterpreter : public Node {
 
 	std::string visitPrint(Stmt* stmt);
 
-	std::string visitVar(Stmt* stmt);
+	std::string visitVar(Var* stmt);
 
 	bool isTrue(Expr* expr);
 

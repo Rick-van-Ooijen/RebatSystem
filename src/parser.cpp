@@ -32,7 +32,25 @@ std::vector<Stmt*> Parser::parse()
 }
 
 Expr* Parser::expression() {
-	return equality();
+	return assignment();
+}
+
+Expr* Parser::assignment() {
+	Expr* expr = equality();
+	if (match({TokenType::T_EQUAL})) {
+		Token* equals = tokens[current-1];
+		Expr* value = assignment();
+		
+		if(dynamic_cast<Variable*>(expr) != nullptr)
+		{
+			Token* name = (dynamic_cast<Variable*>(expr))->name;
+			return new Assign(name, value);
+		}
+
+		interpreter->reportError(tokens[current-1]->line, "Invalid assignment target.");
+		throw 0;
+	}
+	return expr;
 }
 
 Expr* Parser::equality() {

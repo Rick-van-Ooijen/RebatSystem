@@ -26,7 +26,26 @@ protected:
 	static void _bind_methods() {};
 };
 
+class Assign : public Expr {
+	GDCLASS(Assign, Expr)
+public:
 
+	Token* name;
+	Expr* value;
+
+	Assign() {};
+	~Assign() {};
+	Assign(Token* iName, Expr* iValue) {
+		name = iName;
+		value = iValue;
+	};
+
+	std::string accept(AstPrinter* printer) override;
+	std::string acceptI(RBInterpreter* interpreter) override;
+
+protected:
+	static void _bind_methods() {};
+};
 
 class Binary : public Expr {
 	GDCLASS(Binary, Expr)
@@ -158,6 +177,9 @@ public:
 	{return ("(" + expr->mOperator->lexeme + " " + print(expr->right) + ")");}
 
 	std::string visitVariableExpr(Variable* expr)
+	{return "";}
+
+	std::string visitAssignExpr(Assign* expr)
 	{return "";}
 
 protected:
