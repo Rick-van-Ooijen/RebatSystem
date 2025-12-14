@@ -24,7 +24,23 @@ protected:
 	static void _bind_methods() {};
 };
 
+class Block : public Stmt {
+	GDCLASS(Block, Stmt)
+public:
 
+	std::vector<Stmt*> statements;
+
+	Block() {};
+	~Block() {};
+	Block(std::vector<Stmt*> iStatements) {
+		statements = iStatements;
+	};
+
+	std::string accept(RBInterpreter* interpreter) override;
+
+protected:
+	static void _bind_methods() {};
+};
 
 class Expression : public Stmt {
 	GDCLASS(Expression, Stmt)
@@ -115,7 +131,10 @@ public:
 	
 	Stmt* statement() {
 		if (match({TokenType::T_PRINT}))
-		{ return printStatement(); }
+			{ return printStatement(); }
+
+		if (match({TokenType::T_LEFT_BRACE}))
+			{ return new Block(block()); }
 
 		return expressionStatement();
 	}
@@ -144,6 +163,9 @@ public:
 	bool match(std::vector<int> types);
 	Token* consume(int type, std::string message);
 	void error(Token* token, std::string message);
+
+	std::vector<Stmt*> block();
+
 
 protected:
 	static void _bind_methods() {};

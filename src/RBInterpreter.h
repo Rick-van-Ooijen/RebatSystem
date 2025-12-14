@@ -18,14 +18,17 @@ class Variable;
 class Stmt;
 class Token;
 class Var;
+class Block;
 
 class Environment :  public Object {
 	GDCLASS(Environment, Object)
 
 public:
 	Environment() {};
+	Environment(Environment* iEnclosing) { enclosing = iEnclosing;};
 	~Environment() {};
 
+	Environment* enclosing = nullptr;
 	std::unordered_map<std::string, std::string> values;
 
 	std::string get(Token* name);
@@ -58,7 +61,7 @@ class RBInterpreter : public Node {
 	
 	private:
 	
-	Environment environment;
+	Environment* environment = new Environment;
 	
 	protected:
 	static void _bind_methods();
@@ -92,6 +95,8 @@ class RBInterpreter : public Node {
 	std::string visitUnaryExpr(Unary* expr);
 
 	std::string visitVariableExpr(Variable* expr);
+
+	std::string visitBlock(Block* stmt);
 
 	std::string visitExpression(Stmt* stmt);
 
@@ -141,6 +146,8 @@ class RBInterpreter : public Node {
 		else
 			{return "false";}
 	};
+
+	std::string executeBlock(std::vector<Stmt*> statements, Environment* iEnvironment);
 
 };
 

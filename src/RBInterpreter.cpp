@@ -246,7 +246,7 @@ std::string RBInterpreter::visitAssignExpr(Assign* expr)
 {
 	std::string value = evaluate(expr->value);
 
-	if(environment.assign(expr->name->literal, value))
+	if(environment->assign(expr->name->literal, value))
 	{
 		return value;
 	}
@@ -279,7 +279,7 @@ std::string RBInterpreter::visitUnaryExpr(Unary* expr)
 
 std::string RBInterpreter::visitVariableExpr(Variable* expr)
 {
-	return environment.get(expr->name);
+	return environment->get(expr->name);
 }
 
 bool RBInterpreter::isTrue(Expr* expr)
@@ -301,6 +301,10 @@ bool RBInterpreter::isTrue(Expr* expr)
 	return true;
 }
 
+std::string RBInterpreter::visitBlock(Block* stmt)
+{
+	return executeBlock(stmt->statements, new Environment(environment));
+}
 
 std::string RBInterpreter::visitExpression(Stmt* stmt)
 {
@@ -324,7 +328,7 @@ std::string RBInterpreter::visitVar(Var* stmt)
 		value = evaluate(stmt->expression);
 	}
 
-	environment.define(stmt->name->lexeme, value);
+	environment->define(stmt->name->lexeme, value);
 
 	return "";
 }
@@ -338,8 +342,32 @@ std::string Environment::get(Token* name)
 		return (found->second);
 	}
 
+	if (enclosing != nullptr)
+	{
+		return enclosing->get(name);
+	}
+
 	std::string newText = ("Line (" + std::to_string(name->line) + ") ERROR: Undefined variable '" + name->lexeme + "'.");
 	UtilityFunctions::print(newText.c_str());
 	return "";
 
+}
+
+std::string RBInterpreter::executeBlock(std::vector<Stmt*> statements, Environment* iEnvironment)
+{
+	Environment* previous = environment;
+
+	try
+	{
+		environment = iEnvironment;
+		for (Stmt* statement : statements)
+		{
+			statement->accept(this);
+		}
+	}
+	catch (int error) { ; }
+
+	environment = previous;
+
+	return "block";
 }

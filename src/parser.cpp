@@ -23,9 +23,6 @@ std::vector<Stmt*> Parser::parse()
 		}
 		catch (int error) { synchronize(); }
 
-		//UtilityFunctions::print(("current: " + std::to_string(current)).c_str());
-		//UtilityFunctions::print(("tokens size: " + std::to_string(tokens.size())).c_str());
-
 	}
 
 	return statements;
@@ -203,10 +200,16 @@ void Parser::error(Token* token, std::string message) {
 	interpreter->reportError(token->line, errorMessage);
 }
 
+std::string Block::accept(RBInterpreter* interpreter)
+{
+	return interpreter->visitBlock(this);
+}
+
 std::string Expression::accept(RBInterpreter* interpreter)
 {
 	return interpreter->visitExpression(this);
 }
+
 std::string Print::accept(RBInterpreter* interpreter)
 {
 	return interpreter->visitPrint(this);
@@ -216,3 +219,21 @@ std::string Var::accept(RBInterpreter* interpreter)
 {
 	return interpreter->visitVar(this);
 }
+
+
+
+std::vector<Stmt*> Parser::block()
+{
+	std::vector<Stmt*> blockStatements;
+
+	while((tokens[current]->type != TokenType::T_RIGHT_BRACE) && (current < tokens.size()))
+	{
+		blockStatements.push_back(declaration());
+	}
+	
+	consume(TokenType::T_RIGHT_BRACE, "Expect '}' after block.");
+	return blockStatements;
+}
+
+
+
