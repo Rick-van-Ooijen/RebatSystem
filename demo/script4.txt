@@ -1,15 +1,10 @@
 var a = 5;
 var b = 3;
 {
-	var b = 5;
+	b = 5;
 	print a + b;
-	var c = 9;
+	//var c = 9;
 }
 
 print b;
-print c;
-
-if (9>88)
-print "i am the arbiter of truth!!!!";
-else
-(print "i am a filthy liar!!!";)
+//print c;

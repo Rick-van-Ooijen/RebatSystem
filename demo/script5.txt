@@ -1,0 +1,11 @@
+if (9>8 and true)
+{print "i am the arbiter of truth!!!!";}
+else
+{print "i am a filthy liar!!!";}
+
+var c = 0;
+while(c <= 9)
+{
+	print c;
+	c = c + 1;
+}

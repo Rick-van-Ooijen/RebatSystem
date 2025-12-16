@@ -19,6 +19,11 @@ std::string Grouping::accept(AstPrinter* printer)
 	return printer->visitGroupingExpr(this);
 }
 
+std::string Logical::accept(AstPrinter* printer)
+{
+	return printer->visitLogicalExpr(this);
+}
+
 std::string Literal::accept(AstPrinter* printer)
 {
 	return printer->visitLiteralExpr(this);
@@ -48,6 +53,11 @@ std::string Binary::acceptI(RBInterpreter* interpreter)
 std::string Grouping::acceptI(RBInterpreter* interpreter)
 {
 	return interpreter->visitGroupingExpr(this);
+}
+
+std::string Logical::acceptI(RBInterpreter* interpreter)
+{
+	return interpreter->visitLogicalExpr(this);
 }
 
 std::string Literal::acceptI(RBInterpreter* interpreter)

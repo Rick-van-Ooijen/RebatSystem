@@ -237,6 +237,23 @@ std::string RBInterpreter::visitGroupingExpr(Grouping* expr)
 	return evaluate(expr->expression);
 }
 
+std::string RBInterpreter::visitLogicalExpr(Logical* expr)
+{
+	std::string left = evaluate(expr->left);
+	if (expr->mOperator->type == TokenType::T_OR)
+	{
+		if(isTrue(expr->left))
+			{return left;}
+	}
+	else
+	{
+		if(!isTrue(expr->left))
+			{return left;}
+	}
+
+	return evaluate(expr->right);
+}
+
 std::string RBInterpreter::visitLiteralExpr(Literal* expr)
 {
 	return expr->value;
@@ -345,6 +362,15 @@ std::string RBInterpreter::visitVar(Var* stmt)
 
 	environment->define(stmt->name->lexeme, value);
 
+	return "";
+}
+
+std::string RBInterpreter::visitWhile(While* stmt)
+{
+	while (isTrue(stmt->expression))
+	{
+		stmt->body->accept(this);
+	}
 	return "";
 }
 

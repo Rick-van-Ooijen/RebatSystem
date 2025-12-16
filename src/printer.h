@@ -91,6 +91,29 @@ protected:
 	static void _bind_methods() {};
 };
 
+class Logical : public Expr {
+	GDCLASS(Logical, Expr)
+public:
+	Expr* left;
+	Token* mOperator;
+	Expr* right;
+
+	Logical() {};
+	~Logical() {};
+	Logical(Expr* iLeft, Token* iOperator, Expr* iRight) {
+		left = iLeft;
+		mOperator = iOperator;
+		right = iRight;
+	};
+
+	std::string accept(AstPrinter* printer) override;
+	std::string acceptI(RBInterpreter* interpreter) override;
+
+
+protected:
+	static void _bind_methods() {};
+};
+
 class Literal : public Expr {
 	GDCLASS(Literal, Expr)
 public:
@@ -166,6 +189,10 @@ public:
 
 	std::string visitGroupingExpr(Grouping* expr)
 	{return ("(group " + print(expr->expression) + ")");}
+
+	std::string visitLogicalExpr(Logical* expr)
+	{return "";}
+
 
 	std::string visitLiteralExpr(Literal* expr) {
 		if ( expr->value == "")

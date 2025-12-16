@@ -33,7 +33,7 @@ Expr* Parser::expression() {
 }
 
 Expr* Parser::assignment() {
-	Expr* expr = equality();
+	Expr* expr = or();
 	if (match({TokenType::T_EQUAL})) {
 		Token* equals = tokens[current-1];
 		Expr* value = assignment();
@@ -46,6 +46,26 @@ Expr* Parser::assignment() {
 
 		interpreter->reportError(tokens[current-1]->line, "Invalid assignment target.");
 		throw 0;
+	}
+	return expr;
+}
+
+Expr* Parser::or() {
+	Expr* expr = and();
+	while (match({TokenType::T_OR})) {
+		Token* lOperator = tokens[current-1];
+		Expr* right = and();
+		expr = new Logical(expr, lOperator, right);
+	}
+	return expr;
+}
+
+Expr* Parser::and() {
+	Expr* expr = equality();
+	while (match({TokenType::T_AND})) {
+		Token* lOperator = tokens[current-1];
+		Expr* right = equality();
+		expr = new Logical(expr, lOperator, right);
 	}
 	return expr;
 }
@@ -223,6 +243,11 @@ std::string Print::accept(RBInterpreter* interpreter)
 std::string Var::accept(RBInterpreter* interpreter)
 {
 	return interpreter->visitVar(this);
+}
+
+std::string While::accept(RBInterpreter* interpreter)
+{
+	return interpreter->visitWhile(this);
 }
 
 

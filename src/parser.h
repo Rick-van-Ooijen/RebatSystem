@@ -102,8 +102,8 @@ public:
 
 	Var() {};
 	~Var() {};
-	Var(Expr* iExpression, Token* iName) {
-		expression = iExpression;
+	Var(Expr* iInitializer, Token* iName) {
+		expression = iInitializer;
 		name = iName;
 	};
 
@@ -113,6 +113,23 @@ protected:
 	static void _bind_methods() {};
 };
 
+class While : public Stmt {
+	GDCLASS(While, Stmt)
+public:
+	Stmt* body;
+
+	While() {};
+	~While() {};
+	While(Expr* iCondition, Stmt* iBody) {
+		expression = iCondition;
+		body = iBody;
+	};
+
+	std::string accept(RBInterpreter* interpreter) override;
+
+protected:
+	static void _bind_methods() {};
+};
 
 
 class Parser : public Object {
@@ -154,6 +171,9 @@ public:
 		if (match({TokenType::T_PRINT}))
 			{ return printStatement(); }
 
+		if (match({TokenType::T_WHILE}))
+			{return whileStatement();}
+
 		if (match({TokenType::T_IF}))
 			{ return ifStatement(); }
 
@@ -161,6 +181,14 @@ public:
 			{ return new Block(block()); }
 
 		return expressionStatement();
+	}
+
+	Stmt* whileStatement() {
+		consume(TokenType::T_LEFT_PAREN, "Expect '(' after 'while'.");
+		Expr* condition = expression();
+		consume(TokenType::T_RIGHT_PAREN, "Expect ')' after condition.");
+		Stmt* body = statement();
+		return new While(condition, body);
 	}
 
 	Stmt* ifStatement() {
@@ -191,6 +219,8 @@ public:
 	}
 
 	Expr* expression();
+	Expr* or();
+	Expr* and();
 	Expr* assignment();
 	Expr* equality();
 	Expr* comparison();

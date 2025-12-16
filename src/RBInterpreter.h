@@ -11,6 +11,7 @@ namespace godot {
 class Expr;
 class Binary;
 class Grouping;
+class Logical;
 class Literal;
 class Assign;
 class Unary;
@@ -20,6 +21,7 @@ class Token;
 class Var;
 class Block;
 class IfStmt;
+class While;
 
 class Environment :  public Object {
 	GDCLASS(Environment, Object)
@@ -48,6 +50,8 @@ public:
 		}
 		else
 		{
+			if (enclosing != nullptr)
+				{return enclosing->assign(name, value);}
 			return false;
 		}
 	}
@@ -89,6 +93,8 @@ class RBInterpreter : public Node {
 
 	std::string visitGroupingExpr(Grouping* expr);
 
+	std::string visitLogicalExpr(Logical* expr);
+
 	std::string visitLiteralExpr(Literal* expr);
 
 	std::string visitAssignExpr(Assign* expr);
@@ -106,6 +112,8 @@ class RBInterpreter : public Node {
 	std::string visitPrint(Stmt* stmt);
 
 	std::string visitVar(Var* stmt);
+
+	std::string visitWhile(While* stmt);
 
 	bool isTrue(Expr* expr);
 
