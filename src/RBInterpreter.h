@@ -19,6 +19,7 @@ class Stmt;
 class Token;
 class Var;
 class Block;
+class IfStmt;
 
 class Environment :  public Object {
 	GDCLASS(Environment, Object)
@@ -99,6 +100,8 @@ class RBInterpreter : public Node {
 	std::string visitBlock(Block* stmt);
 
 	std::string visitExpression(Stmt* stmt);
+
+	std::string visitIf(IfStmt* stmt);
 
 	std::string visitPrint(Stmt* stmt);
 

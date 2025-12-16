@@ -58,6 +58,27 @@ protected:
 	static void _bind_methods() {};
 };
 
+class IfStmt : public Stmt {
+	GDCLASS(IfStmt, Stmt)
+public:
+
+	Stmt* thenBranch;
+	Stmt* elseBranch;
+
+	IfStmt() {};
+	~IfStmt() {};
+	IfStmt(Expr* iExpression, Stmt* iThenBranch, Stmt* iElseBranch ) {
+		expression = iExpression;
+		thenBranch = iThenBranch;
+		elseBranch = iElseBranch;
+	};
+
+	std::string accept(RBInterpreter* interpreter) override;
+
+protected:
+	static void _bind_methods() {};
+};
+
 class Print : public Stmt {
 	GDCLASS(Print, Stmt)
 public:
@@ -133,11 +154,29 @@ public:
 		if (match({TokenType::T_PRINT}))
 			{ return printStatement(); }
 
+		if (match({TokenType::T_IF}))
+			{ return ifStatement(); }
+
 		if (match({TokenType::T_LEFT_BRACE}))
 			{ return new Block(block()); }
 
 		return expressionStatement();
 	}
+
+	Stmt* ifStatement() {
+		consume(TokenType::T_LEFT_PAREN, "Expect '(' after 'if'.");
+		Expr* condition = expression();
+		consume(TokenType::T_RIGHT_PAREN, "Expect ')' after if condition.");
+
+		Stmt* thenBranch = statement();
+		Stmt* elseBranch = nullptr;
+		if (match({TokenType::T_ELSE})) {
+			current++;
+			elseBranch = statement();
+		}
+		return new IfStmt(condition, thenBranch, elseBranch);
+	}
+
 
 	Stmt* printStatement() {
 		Expr* value = expression();

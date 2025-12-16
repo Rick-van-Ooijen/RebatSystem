@@ -184,7 +184,7 @@ bool Parser::match(std::vector<int> types) {
 Token* Parser::consume(int type, std::string message) {
 	if (tokens[current]->type == type) {current++; return tokens[current-1];}
 	error(tokens[current], message);
-	
+	return nullptr;
 }
 
 void Parser::error(Token* token, std::string message) {
@@ -208,6 +208,11 @@ std::string Block::accept(RBInterpreter* interpreter)
 std::string Expression::accept(RBInterpreter* interpreter)
 {
 	return interpreter->visitExpression(this);
+}
+
+std::string IfStmt::accept(RBInterpreter* interpreter)
+{
+	return interpreter->visitIf(this);
 }
 
 std::string Print::accept(RBInterpreter* interpreter)

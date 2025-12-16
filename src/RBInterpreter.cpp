@@ -290,13 +290,15 @@ bool RBInterpreter::isTrue(Expr* expr)
 	}
 	else
 	{
-		Literal* exprLiteral = dynamic_cast <Literal*>(expr);
-		if (exprLiteral != nullptr)
-		{
-			if ((exprLiteral->value == "false") || (exprLiteral->value == ""))
-				{return false;}
+		std::string value = evaluate(expr);
+		//Literal* exprLiteral = dynamic_cast <Literal*>(expr);
+		//if (value != "")//(exprLiteral != nullptr)
+		//{
+			//if ((exprLiteral->value == "false") || (exprLiteral->value == ""))
+		if ((value == "false") || (value == ""))
+			{return false;}
 
-		}
+		//}
 	}
 	return true;
 }
@@ -309,6 +311,19 @@ std::string RBInterpreter::visitBlock(Block* stmt)
 std::string RBInterpreter::visitExpression(Stmt* stmt)
 {
 	return evaluate(stmt->expression);
+}
+
+std::string RBInterpreter::visitIf(IfStmt* stmt)
+{
+	if(isTrue(stmt->expression)) {
+		stmt->thenBranch->accept(this);
+	}
+	else if (stmt->elseBranch != nullptr)
+	{
+		stmt->elseBranch->accept(this);
+	}
+
+	return "ifStmt";
 }
 
 
