@@ -168,27 +168,22 @@ public:
 	}
 	
 	Stmt* statement() {
-		if (match({TokenType::T_PRINT}))
-			{ return printStatement(); }
-
-		if (match({TokenType::T_WHILE}))
-			{return whileStatement();}
-
 		if (match({TokenType::T_IF}))
 			{ return ifStatement(); }
+		
+		if (match({TokenType::T_PRINT}))
+			{ return printStatement(); }
+			
+		if (match({TokenType::T_FOR}))
+			{ return forStatement(); }
+			
+		if (match({TokenType::T_WHILE}))
+			{return whileStatement();}
 
 		if (match({TokenType::T_LEFT_BRACE}))
 			{ return new Block(block()); }
 
 		return expressionStatement();
-	}
-
-	Stmt* whileStatement() {
-		consume(TokenType::T_LEFT_PAREN, "Expect '(' after 'while'.");
-		Expr* condition = expression();
-		consume(TokenType::T_RIGHT_PAREN, "Expect ')' after condition.");
-		Stmt* body = statement();
-		return new While(condition, body);
 	}
 
 	Stmt* ifStatement() {
@@ -205,6 +200,61 @@ public:
 		return new IfStmt(condition, thenBranch, elseBranch);
 	}
 
+	Stmt* forStatement() {
+		consume(TokenType::T_LEFT_PAREN, "Expect '(' after 'for'.");
+
+		Stmt* initializer;
+		if (match({TokenType::T_SEMICOLON}))
+		{
+			initializer = nullptr;
+		}
+		else if (match({TokenType::T_VAR}))
+		{
+			initializer = varDeclaration();
+		}
+		else
+		{
+			initializer = expressionStatement();
+		}
+
+		Expr* condition = nullptr;
+		if (tokens[current]->type != TokenType::T_SEMICOLON)
+		{
+			condition = expression();
+		}
+		consume(TokenType::T_SEMICOLON, "Expect ';' after loop condition.");
+
+		Expr* increment = nullptr;
+		if (tokens[current]->type != TokenType::T_RIGHT_PAREN)
+		{
+			increment = expression();
+		}
+		consume(TokenType::T_RIGHT_PAREN, "Expect ')' after for clauses.");
+		
+		Stmt* body = statement();
+
+		if (increment != nullptr) {
+			body = new Block({ body, new Expression(increment)});
+		}
+
+		if (condition == nullptr) {condition = new Literal("true");}	// While true is risky without breaks
+		body = new While(condition, body);
+
+		if (initializer != nullptr) {
+			body = new Block({ initializer, body });
+		}
+
+		return body;
+
+	}
+
+	Stmt* whileStatement() {
+		consume(TokenType::T_LEFT_PAREN, "Expect '(' after 'while'.");
+		Expr* condition = expression();
+		consume(TokenType::T_RIGHT_PAREN, "Expect ')' after condition.");
+		Stmt* body = statement();
+		return new While(condition, body);
+	}
 
 	Stmt* printStatement() {
 		Expr* value = expression();
