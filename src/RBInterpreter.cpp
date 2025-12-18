@@ -232,6 +232,23 @@ std::string RBInterpreter::visitBinaryExpr(Binary* expr)
 	return "";
 }
 
+std::string RBInterpreter::visitCallExpr(Call* expr)
+{
+	std::string callee = evaluate(expr->callee);
+	std::vector<std::string> arguments;
+
+	for (Expr* argument : expr->arguments) {
+		arguments->push_back(evaluate(argument));
+	}
+
+	//LoxCallable* function = (LoxCallable)callee;
+
+
+	//return function.call(this, arguments);
+	return "";
+
+}
+
 std::string RBInterpreter::visitGroupingExpr(Grouping* expr)
 {
 	return evaluate(expr->expression);

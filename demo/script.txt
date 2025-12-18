@@ -1,11 +1,4 @@
--1/=
-==
->=
-var
-varken
-for
-99.55
-"Hello,
-World!"
-// this won't be read
--
+if (false)
+{print "This is true";}
+else
+{print "This is false";}

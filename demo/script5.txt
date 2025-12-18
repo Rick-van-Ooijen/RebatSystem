@@ -1,8 +1,3 @@
-if (9>8 and true)
-{print "i am the arbiter of truth!!!!";}
-else
-{print "i am a filthy liar!!!";}
-
 var c = 0;
 while(c <= 9)
 {
@@ -10,9 +5,9 @@ while(c <= 9)
 	c = c + 1;
 }
 
-var a = 1
+var a = 1;
 
-for (var i = 1; i <= 100; i = i + 1) {
+for (var i = 0; i < 5; i = i + 1) {
 	print "
 "
 	print "at: " + i;

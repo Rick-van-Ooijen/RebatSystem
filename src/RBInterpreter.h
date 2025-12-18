@@ -10,6 +10,7 @@ namespace godot {
 
 class Expr;
 class Binary;
+class Call;
 class Grouping;
 class Logical;
 class Literal;
@@ -91,6 +92,8 @@ class RBInterpreter : public Node {
 
 	std::string visitBinaryExpr(Binary* expr);
 
+	std::string visitCallExpr(Call* expr);
+
 	std::string visitGroupingExpr(Grouping* expr);
 
 	std::string visitLogicalExpr(Logical* expr);
@@ -163,7 +166,18 @@ class RBInterpreter : public Node {
 };
 
 
+class LoxCallable :  public Object {
+	GDCLASS(LoxCallable, Object)
 
+public:
+	LoxCallable() {};
+	~LoxCallable() {};
+
+	std::string call(RBInterpreter* iInterpreter, std::vector<std::string> arguments) {};
+
+protected:
+	static void _bind_methods() {};
+};
 
 
 }

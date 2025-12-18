@@ -69,6 +69,27 @@ protected:
 	static void _bind_methods() {};
 };
 
+class Call : public Expr {
+	GDCLASS(Call, Expr)
+public:
+	Expr* callee;
+	Token* paren;
+	std::vector<Expr*> arguments;
+
+	Call() {};
+	~Call() {};
+	Call(Expr* iCallee, Token* iParen, std::vector<Expr*> iArguments) {
+		callee = iCallee;
+		paren = iParen;
+		arguments = iArguments;
+	};
+
+	std::string accept(AstPrinter* printer) override;
+	std::string acceptI(RBInterpreter* interpreter) override;
+
+protected:
+	static void _bind_methods() {};
+};
 
 
 class Grouping : public Expr {
@@ -208,6 +229,9 @@ public:
 
 	std::string visitAssignExpr(Assign* expr)
 	{return "";}
+
+	std::string visitCallExpr(Call* expr)
+		{return "";}
 
 protected:
 	static void _bind_methods() {};

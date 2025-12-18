@@ -119,6 +119,40 @@ Expr* Parser::unary() {
 	return primary();
 }
 
+Expr* Parser::call() {
+	Expr* expr = primary();
+
+	bool looping = true;
+	while(looping){
+		if (match( {TokenType::T_LEFT_PAREN} )) {
+			expr = finishCall(expr);
+		} else {
+			looping = false;
+		}
+	}
+	return expr;
+}
+
+Expr* Parser::finishCall(Expr* callee) {
+	std::vector<Expr*> arguments;
+
+	if (tokens[current]->type != TokenType::T_RIGHT_PAREN)
+	{
+		do {
+			if (arguments.size() >= 255)
+				{error(tokens[current+1], "Can't have more than 255 arguments.");}
+
+			arguments.push_back(expression());
+		}
+		while (match({TokenType::T_COMMA}));
+
+	}
+
+	Token* paren = consume(TokenType::T_RIGHT_PAREN, "Expect ')' after arguments.");
+
+	return new Call(callee, paren, arguments);
+}
+
 Expr* Parser::primary() {
 	if (match({TokenType::T_FALSE})) {return new Literal("false");};
 	if (match({TokenType::T_TRUE})) {return new Literal("true");};

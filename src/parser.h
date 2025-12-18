@@ -277,6 +277,8 @@ public:
 	Expr* term();
 	Expr* factor();
 	Expr* unary();
+	Expr* call();
+	Expr* finishCall(Expr* callee);
 	Expr* primary();
 	void synchronize();
 	bool match(std::vector<int> types);

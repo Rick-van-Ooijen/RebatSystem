@@ -14,6 +14,11 @@ std::string Binary::accept(AstPrinter* printer)
 	return printer->visitBinaryExpr(this);
 }
 
+std::string Call::accept(AstPrinter* printer)
+{
+	return printer->visitCallExpr(this);
+}
+
 std::string Grouping::accept(AstPrinter* printer)
 {
 	return printer->visitGroupingExpr(this);
@@ -48,6 +53,11 @@ std::string Assign::accept(AstPrinter* printer)
 std::string Binary::acceptI(RBInterpreter* interpreter)
 {
 	return interpreter->visitBinaryExpr(this);
+}
+
+std::string Call::acceptI(RBInterpreter* interpreter)
+{
+	return interpreter->visitCallExpr(this);
 }
 
 std::string Grouping::acceptI(RBInterpreter* interpreter)
