@@ -18,6 +18,9 @@ void RBInterpreter::_bind_methods() {
 
 RBInterpreter::RBInterpreter() {
 	// Initialize any variables here.
+
+	functions.insert_or_assign("clock", new ClockFunction);
+	environment->define("clock", "clock");
 }
 
 RBInterpreter::~RBInterpreter() {
@@ -234,18 +237,26 @@ std::string RBInterpreter::visitBinaryExpr(Binary* expr)
 
 std::string RBInterpreter::visitCallExpr(Call* expr)
 {
-	std::string callee = evaluate(expr->callee);
+	std::string callee = evaluate(expr->callee); // function name
 	std::vector<std::string> arguments;
 
 	for (Expr* argument : expr->arguments) {
-		arguments->push_back(evaluate(argument));
+		arguments.push_back(evaluate(argument));
 	}
 
-	//LoxCallable* function = (LoxCallable)callee;
+	auto function = functions.find(callee);
 
+	if (function == functions.end())
+	{
+		reportError(expr->paren->line, "Can only call functions and classes.");
+		return "";
+	}
+	if (arguments.size() != function->second->arity())
+	{
+		reportError(expr->paren->line, "Expected " + std::to_string(function->second->arity()) + " arguments but got " + std::to_string(arguments.size()) + ".");
+	}
 
-	//return function.call(this, arguments);
-	return "";
+	return function->second->call(this, arguments);
 
 }
 

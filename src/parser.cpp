@@ -116,7 +116,7 @@ Expr* Parser::unary() {
 		Expr* right = unary();
 		return new Unary(lOperator, right);
 	}
-	return primary();
+	return call();
 }
 
 Expr* Parser::call() {
@@ -140,7 +140,7 @@ Expr* Parser::finishCall(Expr* callee) {
 	{
 		do {
 			if (arguments.size() >= 255)
-				{error(tokens[current+1], "Can't have more than 255 arguments.");}
+				{error(tokens[current], "Can't have more than 255 arguments.");}
 
 			arguments.push_back(expression());
 		}

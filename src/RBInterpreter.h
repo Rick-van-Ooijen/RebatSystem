@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <ctime>
 
 namespace godot {
 
@@ -23,6 +24,7 @@ class Var;
 class Block;
 class IfStmt;
 class While;
+class LoxCallable;
 
 class Environment :  public Object {
 	GDCLASS(Environment, Object)
@@ -68,6 +70,7 @@ class RBInterpreter : public Node {
 	private:
 	
 	Environment* environment = new Environment;
+	std::unordered_map<std::string, LoxCallable*> functions;
 	
 	protected:
 	static void _bind_methods();
@@ -173,7 +176,35 @@ public:
 	LoxCallable() {};
 	~LoxCallable() {};
 
-	std::string call(RBInterpreter* iInterpreter, std::vector<std::string> arguments) {};
+	virtual std::string call(RBInterpreter* iInterpreter, std::vector<std::string> arguments) {return "";};
+
+	int arity() {return 0;};
+
+	virtual std::string toString() {return "";};
+
+
+protected:
+	static void _bind_methods() {};
+};
+
+class ClockFunction :  public LoxCallable {
+	GDCLASS(ClockFunction, LoxCallable)
+
+public:
+	ClockFunction() {};
+	~ClockFunction() {};
+
+	std::string call(RBInterpreter* iInterpreter, std::vector<std::string> arguments) override
+	{
+		//std::time_t result = std::time(nullptr);
+		time_t epoch = 0;
+		std::string time = std::to_string((intmax_t)epoch);
+		return time;
+	}
+
+	std::string toString() override { return "<native fn>"; }
+
+
 
 protected:
 	static void _bind_methods() {};
