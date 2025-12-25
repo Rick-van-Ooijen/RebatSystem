@@ -58,6 +58,28 @@ protected:
 	static void _bind_methods() {};
 };
 
+class Function : public Stmt {
+	GDCLASS(Function, Stmt)
+public:
+	Token* name;
+	std::vector<Token*> params;
+	std::vector<Stmt*> body;
+
+	Function() {};
+	~Function() {};
+	Function(Token* iName, std::vector<Token*> iParams, std::vector<Stmt*> iBody) {
+		name = iName;
+		params = iParams;
+		body = iBody;
+		expression = nullptr;
+	};
+
+	std::string accept(RBInterpreter* interpreter) override;
+
+protected:
+	static void _bind_methods() {};
+};
+
 class IfStmt : public Stmt {
 	GDCLASS(IfStmt, Stmt)
 public:
@@ -87,6 +109,25 @@ public:
 	~Print() {};
 	Print(Expr* iExpression) {
 		expression = iExpression;
+	};
+
+	std::string accept(RBInterpreter* interpreter) override;
+
+protected:
+	static void _bind_methods() {};
+};
+
+class Return : public Stmt {
+	GDCLASS(Return, Stmt)
+public:
+	Token* keyword;
+
+
+	Return() {};
+	~Return() {};
+	Return(Token* iKeyword, Expr* value) {
+		keyword = iKeyword;
+		expression = value;
 	};
 
 	std::string accept(RBInterpreter* interpreter) override;
@@ -148,10 +189,41 @@ public:
 	std::vector<Stmt*> parse();
 
 	Stmt* declaration() {
+		if (match({TokenType::T_FUN}))
+			{ return function("function");}
 		if (match({TokenType::T_VAR}))
 			{ return varDeclaration(); }
 		
 		return statement();
+	}
+
+	Stmt* function(std::string kind) {
+		Token* name = consume(TokenType::T_IDENTIFIER, ("Expect " + kind + " name."));
+		consume(TokenType::T_LEFT_PAREN, ("Expect '(' after " + kind + " name."));
+
+		std::vector<Token*> parameters;
+
+		if(tokens[current]->type != TokenType::T_RIGHT_PAREN)
+		{
+			do {
+				if (parameters.size() >= 255)
+				{
+					error(tokens[current], "Can't have more than 255 parameters.");
+				}
+				parameters.push_back(consume(TokenType::T_IDENTIFIER, "Expect parameter name."));
+
+			}
+			while(tokens[current]->type == TokenType::T_COMMA);
+		}
+
+	consume(TokenType::T_RIGHT_PAREN, "Expect ')' after parameters.");
+	
+	consume(TokenType::T_LEFT_BRACE, ("Expect '{' before " + kind + " body."));
+
+	std::vector<Stmt*> body = block();
+
+	return new Function(name, parameters, body);
+	
 	}
 
 	Stmt* varDeclaration()
@@ -173,6 +245,9 @@ public:
 		
 		if (match({TokenType::T_PRINT}))
 			{ return printStatement(); }
+
+		if (match({TokenType::T_RETURN}))
+			{ return returnStatement(); }
 			
 		if (match({TokenType::T_FOR}))
 			{ return forStatement(); }
@@ -260,6 +335,17 @@ public:
 		Expr* value = expression();
 		consume(TokenType::T_SEMICOLON, "Expect ';' after value.");
 		return new Print(value);
+	}
+
+	Stmt* returnStatement() {
+		Token* keyword = tokens[current-1];
+		Expr* value = nullptr;
+		if (tokens[current]->type != TokenType::T_SEMICOLON)
+		{
+			value = expression();
+		}
+		consume(TokenType::T_SEMICOLON, "Expect ';' after return value.");
+		return new Return(keyword, value);
 	}
 
 	Stmt* expressionStatement() {

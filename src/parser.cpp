@@ -264,6 +264,11 @@ std::string Expression::accept(RBInterpreter* interpreter)
 	return interpreter->visitExpression(this);
 }
 
+std::string Function::accept(RBInterpreter* interpreter)
+{
+	return interpreter->visitFunction(this);
+}
+
 std::string IfStmt::accept(RBInterpreter* interpreter)
 {
 	return interpreter->visitIf(this);
@@ -272,6 +277,11 @@ std::string IfStmt::accept(RBInterpreter* interpreter)
 std::string Print::accept(RBInterpreter* interpreter)
 {
 	return interpreter->visitPrint(this);
+}
+
+std::string Return::accept(RBInterpreter* interpreter)
+{
+	return interpreter->visitReturn(this);
 }
 
 std::string Var::accept(RBInterpreter* interpreter)

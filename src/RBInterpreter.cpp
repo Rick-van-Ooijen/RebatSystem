@@ -358,6 +358,22 @@ std::string RBInterpreter::visitExpression(Stmt* stmt)
 	return evaluate(stmt->expression);
 }
 
+std::string RBInterpreter::visitFunction(Function* stmt)
+{
+	std::vector<std::string> argumentNames;
+	for (Token* current : stmt->params)
+	{
+		argumentNames.push_back(current->lexeme);
+	}
+
+	UserFunction* function = new UserFunction(stmt->body, argumentNames, stmt->name, environment);
+	
+	functions.insert_or_assign(stmt->name->lexeme, function);
+	globals->define(stmt->name->lexeme, stmt->name->lexeme);
+
+	return "";
+}
+
 std::string RBInterpreter::visitIf(IfStmt* stmt)
 {
 	if(isTrue(stmt->expression)) {
@@ -377,6 +393,17 @@ std::string RBInterpreter::visitPrint(Stmt* stmt)
 	std::string output = evaluate(stmt->expression);
 	UtilityFunctions::print(output.c_str());
 	return output;
+}
+
+std::string RBInterpreter::visitReturn(Return* stmt)
+{
+	std::string value = "";
+	if (stmt->expression != nullptr)
+	{
+		value = evaluate(stmt->expression);
+	}
+
+	throw value;
 }
 
 std::string RBInterpreter::visitVar(Var* stmt)
@@ -439,4 +466,13 @@ std::string RBInterpreter::executeBlock(std::vector<Stmt*> statements, Environme
 	environment = previous;
 
 	return "block";
+}
+
+UserFunction::UserFunction(std::vector<Stmt*> iBody, std::vector<std::string> iArgumentNames, Token* iName, Environment* iClosure)
+{
+	body = iBody;
+	argumentNames = iArgumentNames;
+	arityNumber = argumentNames.size();
+	name = iName->lexeme;
+	clusure = iClosure;
 }

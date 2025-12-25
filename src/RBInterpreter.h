@@ -25,6 +25,8 @@ class Block;
 class IfStmt;
 class While;
 class LoxCallable;
+class Function;
+class Return;
 
 class Environment :  public Object {
 	GDCLASS(Environment, Object)
@@ -59,6 +61,20 @@ public:
 		}
 	}
 
+	bool checkPresent(std::string name)
+	{
+		if (values.find(name) != values.end())
+		{
+			return true;
+		}
+		else
+		{
+			if (enclosing != nullptr)
+				{return enclosing->checkPresent(name);}
+			return false;
+		}
+	}
+
 protected:
 	static void _bind_methods() {};
 };
@@ -78,6 +94,7 @@ class RBInterpreter : public Node {
 	void runFile(std::string path);
 	
 	public:
+	Environment* globals = environment;
 	RBInterpreter();
 	~RBInterpreter();
 	
@@ -113,9 +130,13 @@ class RBInterpreter : public Node {
 
 	std::string visitExpression(Stmt* stmt);
 
+	std::string visitFunction(Function* stmt);
+
 	std::string visitIf(IfStmt* stmt);
 
 	std::string visitPrint(Stmt* stmt);
+
+	std::string visitReturn(Return* stmt);
 
 	std::string visitVar(Var* stmt);
 
@@ -175,12 +196,55 @@ class LoxCallable :  public Object {
 public:
 	LoxCallable() {};
 	~LoxCallable() {};
+	int arityNumber = 0;
 
 	virtual std::string call(RBInterpreter* iInterpreter, std::vector<std::string> arguments) {return "";};
 
-	int arity() {return 0;};
+	int arity() {return arityNumber;};
 
 	virtual std::string toString() {return "";};
+
+
+protected:
+	static void _bind_methods() {};
+};
+
+class UserFunction :  public LoxCallable {
+	GDCLASS(UserFunction, LoxCallable)
+
+public:
+	UserFunction() {};
+	UserFunction(std::vector<Stmt*> iBody, std::vector<std::string> iArgumentNames, Token* iName, Environment* iClosure);
+	~UserFunction() {};
+
+	std::vector<Stmt*> body;
+	std::vector<std::string> argumentNames;
+	Environment* clusure;
+	
+	std::string name;
+
+	std::string call(RBInterpreter* iInterpreter, std::vector<std::string> arguments) override
+	{
+		
+		Environment* environment = new Environment(clusure);
+		for (int i = 0; i < arguments.size(); i++)
+		{
+			environment->define(argumentNames[i], arguments[i]);
+		}
+
+		try
+		{
+			iInterpreter->executeBlock(body, environment);
+		}
+		catch (std::string error)
+		{
+			return error;
+		}
+		
+		return "";
+	}
+
+	std::string toString() override { return "<fn " + name + ">"; }
 
 
 protected:

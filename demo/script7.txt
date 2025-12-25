@@ -1,0 +1,10 @@
+var a = "outer";
+{
+	var a = a;
+	print a;
+}
+print a;
+
+
+outer
+outer
