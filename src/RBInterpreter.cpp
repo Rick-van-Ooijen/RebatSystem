@@ -449,6 +449,19 @@ std::string Environment::get(Token* name)
 
 }
 
+void Environment::define(std::string name, std::string value)
+{
+	if(checkPresent(name))
+	{
+		std::string newText = ("ERROR: Cannot redeclare variable '" + name + "'.");
+		UtilityFunctions::print(newText.c_str());
+	}
+	else
+	{
+		values.insert_or_assign(name, value);
+	}
+}
+
 std::string RBInterpreter::executeBlock(std::vector<Stmt*> statements, Environment* iEnvironment)
 {
 	Environment* previous = environment;

@@ -1,9 +1,9 @@
-//print clock();
+print clock();
 
-fun banana(n)
-{
-	print "banana";
-	return n + 1;
-}
+//fun banana(n)
+//{
+//	print "banana";
+//	return n + 1;
+//}
 
-print banana(banana(7));
+//print banana(banana(7));

@@ -6,6 +6,7 @@
 #include <vector>
 #include <unordered_map>
 #include <ctime>
+#include <chrono>
 
 namespace godot {
 
@@ -41,10 +42,7 @@ public:
 
 	std::string get(Token* name);
 
-	void define(std::string name, std::string value)
-	{
-		values.insert_or_assign(name, value);
-	}
+	void define(std::string name, std::string value);
 
 	bool assign(std::string name, std::string value)
 	{
@@ -260,9 +258,12 @@ public:
 
 	std::string call(RBInterpreter* iInterpreter, std::vector<std::string> arguments) override
 	{
-		//std::time_t result = std::time(nullptr);
-		time_t epoch = 0;
-		std::string time = std::to_string((intmax_t)epoch);
+		auto start = std::chrono::system_clock::now();
+
+		std::time_t end_time = std::chrono::system_clock::to_time_t(start);
+
+		
+		std::string time = std::ctime(&end_time);
 		return time;
 	}
 
@@ -274,6 +275,10 @@ protected:
 	static void _bind_methods() {};
 };
 
+//classes
+//new class
+//like callable
+//has callables
 
 }
 #endif
