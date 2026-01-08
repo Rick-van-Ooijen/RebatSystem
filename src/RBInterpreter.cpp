@@ -20,7 +20,6 @@ RBInterpreter::RBInterpreter() {
 	// Initialize any variables here.
 
 	functions.insert_or_assign("clock", new ClockFunction);
-	environment->define("clock", "clock");
 }
 
 RBInterpreter::~RBInterpreter() {
@@ -245,12 +244,25 @@ std::string RBInterpreter::visitCallExpr(Call* expr)
 	}
 
 	auto function = functions.find(callee);
+	auto klass = classes.find(callee);
 
-	if (function == functions.end())
+	if ((function == functions.end()) && (klass == classes.end()))
 	{
 		reportError(expr->paren->line, "Can only call functions and classes.");
 		return "";
 	}
+	
+	if (klass != classes.end())
+	{
+		LoxInstance* instance = klass->second->call(this, arguments);
+		
+		std::string instanceID = ("instance: " + instances.size());
+		instances.insert_or_assign(instanceID, instance);
+		
+		return instanceID;
+		
+	}
+
 	if (arguments.size() != function->second->arity())
 	{
 		reportError(expr->paren->line, "Expected " + std::to_string(function->second->arity()) + " arguments but got " + std::to_string(arguments.size()) + ".");
@@ -299,7 +311,18 @@ std::string RBInterpreter::visitLogicalExpr(Logical* expr)
 
 std::string RBInterpreter::visitSetExpr(Set* expr)
 {
-	return "";
+	std::string object = evaluate(expr->object);
+	if (instances.find(object) == instances.end())
+	{
+		reportError(expr->name->line, "Only instances have fields.");
+		return "";
+	}
+	std::string value = evaluate(expr->value);
+	auto found = instances.find(object);
+	found->second->set(expr->name, value);
+
+	return value;
+
 }
 
 std::string RBInterpreter::visitLiteralExpr(Literal* expr)
@@ -344,7 +367,7 @@ std::string RBInterpreter::visitUnaryExpr(Unary* expr)
 
 std::string RBInterpreter::visitVariableExpr(Variable* expr)
 {
-	return environment->get(expr->name);
+	return environment->get(expr->name, this);
 }
 
 bool RBInterpreter::isTrue(Expr* expr)
@@ -375,9 +398,19 @@ std::string RBInterpreter::visitBlock(Block* stmt)
 
 std::string RBInterpreter::visitClass(Class* stmt)
 {
-	environment->define(stmt->name->lexeme, stmt->name->lexeme);
 
-	LoxClass* klass = new LoxClass(stmt->name->lexeme);
+
+	std::unordered_map<std::string, LoxCallable*> methods;
+	std::vector<std::string> argNames;
+
+	for(Function* method : stmt->methods)
+	{
+		LoxCallable* function = new UserFunction(method->body, argNames, method->name, environment);
+		methods.insert_or_assign(method->name->lexeme, function);
+		argNames.push_back(method->name->lexeme);
+	}
+
+	LoxClass* klass = new LoxClass(stmt->name->lexeme, methods);
 	classes.insert_or_assign(stmt->name->lexeme, klass);
 
 	return "";
@@ -459,7 +492,7 @@ std::string RBInterpreter::visitWhile(While* stmt)
 	return "";
 }
 
-std::string Environment::get(Token* name)
+std::string Environment::get(Token* name, RBInterpreter* interpreter)
 {
 	auto found = values.find(name->literal);
 
@@ -470,13 +503,17 @@ std::string Environment::get(Token* name)
 
 	if (enclosing != nullptr)
 	{
-		return enclosing->get(name);
+		return enclosing->get(name, interpreter);
 	}
 
-	std::string newText = ("Line (" + std::to_string(name->line) + ") ERROR: Undefined variable '" + name->lexeme + "'.");
-	UtilityFunctions::print(newText.c_str());
-	return "";
+	if((interpreter->functions.find(name->lexeme) == interpreter->functions.end()) &&
+		(interpreter->classes.find(name->lexeme) == interpreter->classes.end()) &&
+		(interpreter->instances.find(name->lexeme) == interpreter->instances.end())) {
+		std::string newText = ("Line (" + std::to_string(name->line) + ") ERROR: Undefined variable '" + name->lexeme + "'. HEREREREEERXREEEEEE");
+		UtilityFunctions::print(newText.c_str());
+	}
 
+	return name->lexeme;
 }
 
 void Environment::define(std::string name, std::string value)
@@ -543,3 +580,8 @@ std::string LoxInstance::get(Token* name)
 	UtilityFunctions::print(newText.c_str());
 	return "";
 }
+
+	void LoxInstance::set(Token* name, std::string value)
+	{
+		fields.insert_or_assign(name->lexeme, value);
+	}

@@ -10,6 +10,7 @@
 
 namespace godot {
 
+class RBInterpreter;
 class Expr;
 class Binary;
 class Call;
@@ -45,7 +46,7 @@ public:
 	Environment* enclosing = nullptr;
 	std::unordered_map<std::string, std::string> values;
 
-	std::string get(Token* name);
+	std::string get(Token* name, RBInterpreter* interpreter);
 
 	void define(std::string name, std::string value);
 
@@ -88,10 +89,6 @@ class RBInterpreter : public Node {
 	
 	private:
 	
-	Environment* environment = new Environment;
-	std::unordered_map<std::string, LoxCallable*> functions;
-	std::unordered_map<std::string, LoxClass*> classes;
-	std::unordered_map<std::string, LoxInstance*> instances;
 	
 	protected:
 	static void _bind_methods();
@@ -99,6 +96,12 @@ class RBInterpreter : public Node {
 	void runFile(std::string path);
 	
 	public:
+	
+	Environment* environment = new Environment;
+	std::unordered_map<std::string, LoxCallable*> functions;
+	std::unordered_map<std::string, LoxClass*> classes;
+	std::unordered_map<std::string, LoxInstance*> instances;
+
 	Environment* globals = environment;
 	RBInterpreter();
 	~RBInterpreter();
@@ -294,13 +297,31 @@ class LoxClass :  public Object {
 
 public:
 	std::string name;
+	std::unordered_map<std::string, LoxCallable*> methods;
 
 	LoxClass() {};
-	LoxClass(std::string iName) { name = iName; };
+	LoxClass(std::string iName, std::unordered_map<std::string, LoxCallable*> iMethods) {
+		name = iName;
+		methods = iMethods;	
+	};
 	~LoxClass() {};
 
 	std::string toString() { return name; };
 	LoxInstance* call(RBInterpreter* interpreter, std::vector<std::string> arguments);
+
+	LoxCallable* findMethod(std::string name){
+		auto found = methods.find(name);
+
+		if (found != methods.end())
+		{
+			return found->second;
+		}
+		else
+		{
+			return nullptr;
+		}
+
+	}
 
 
 protected:
@@ -322,6 +343,14 @@ public:
 	std::string toString() { return (klass->name + " instance");};
 
 	std::string get(Token* name);
+
+	void set(Token* name, std::string value);
+
+	LoxCallable* method(std::string name){
+
+		return klass->findMethod(name);
+
+	}
 
 
 protected:

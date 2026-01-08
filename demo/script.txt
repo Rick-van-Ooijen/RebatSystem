@@ -7,3 +7,11 @@ fun banana(n)
 }
 
 print banana(banana(7));
+
+class Bacon {
+	eat() {
+		print "Crunch crunch crunch!";
+	}
+}
+
+Bacon().eat();
