@@ -42,6 +42,27 @@ protected:
 	static void _bind_methods() {};
 };
 
+class Class : public Stmt {
+	GDCLASS(Class, Stmt)
+public:
+	Token* name;
+	std::vector<Function*> methods;
+
+	Class() {};
+	~Class() {};
+	Class(Token* iName, std::vector<Function*> iMethods) {
+		name = iName;
+		methods = iMethods;
+	};
+	
+
+	std::string accept(RBInterpreter* interpreter) override;
+
+protected:
+	static void _bind_methods() {};
+};
+
+
 class Expression : public Stmt {
 	GDCLASS(Expression, Stmt)
 public:
@@ -189,12 +210,31 @@ public:
 	std::vector<Stmt*> parse();
 
 	Stmt* declaration() {
+		if (match({TokenType::T_CLASS}))
+			{ return classDeclaration();}
 		if (match({TokenType::T_FUN}))
 			{ return function("function");}
 		if (match({TokenType::T_VAR}))
 			{ return varDeclaration(); }
 		
 		return statement();
+	}
+
+	Stmt* classDeclaration()
+	{
+		Token* name = consume(TokenType::T_IDENTIFIER, ("Expect class name."));
+		consume(TokenType::T_LEFT_BRACE, "Expect '{' before class body.");
+		std::vector<Function*> methods;
+
+		while((tokens[current]->type != TokenType::T_RIGHT_BRACE) && current <= tokens.size())
+		{
+			methods.push_back(static_cast<Function*>(function("method")));
+		}
+		
+		consume(TokenType::T_RIGHT_BRACE, "Expect '}' after class body.");
+
+
+		return new Class(name, methods);
 	}
 
 	Stmt* function(std::string kind) {

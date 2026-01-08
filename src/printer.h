@@ -91,6 +91,26 @@ protected:
 	static void _bind_methods() {};
 };
 
+class Get : public Expr {
+	GDCLASS(Get, Expr)
+public:
+	Expr* object;
+	Token* name;
+
+	Get() {};
+	~Get() {};
+	Get(Expr* iObject, Token* iName) {
+		object = iObject;
+		name = iName;
+	};
+
+	std::string accept(AstPrinter* printer) override;
+	std::string acceptI(RBInterpreter* interpreter) override;
+
+protected:
+	static void _bind_methods() {};
+};
+
 
 class Grouping : public Expr {
 	GDCLASS(Grouping, Expr)
@@ -128,6 +148,28 @@ public:
 	};
 
 	std::string accept(AstPrinter* printer) override;
+	std::string acceptI(RBInterpreter* interpreter) override;
+
+
+protected:
+	static void _bind_methods() {};
+};
+
+class Set : public Expr {
+	GDCLASS(Set, Expr)
+public:
+	Expr* object;
+	Token* name;
+	Expr* value;
+
+	Set() {};
+	~Set() {};
+	Set(Expr* iObject, Token* iName, Expr* iValue) {
+		object = iObject;
+		name = iName;
+		value = iValue;
+	};
+
 	std::string acceptI(RBInterpreter* interpreter) override;
 
 

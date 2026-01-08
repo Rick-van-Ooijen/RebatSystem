@@ -260,6 +260,21 @@ std::string RBInterpreter::visitCallExpr(Call* expr)
 
 }
 
+std::string RBInterpreter::visitGetExpr(Get* expr)
+{
+	std::string object = evaluate(expr->object);
+
+	auto found = instances.find(object);
+
+	if (found == instances.end())
+	{
+		reportError(expr->name->line, "Only instances have properties.");
+		return "";
+	}
+	return found->second->get(expr->name);
+
+}
+
 std::string RBInterpreter::visitGroupingExpr(Grouping* expr)
 {
 	return evaluate(expr->expression);
@@ -280,6 +295,11 @@ std::string RBInterpreter::visitLogicalExpr(Logical* expr)
 	}
 
 	return evaluate(expr->right);
+}
+
+std::string RBInterpreter::visitSetExpr(Set* expr)
+{
+	return "";
 }
 
 std::string RBInterpreter::visitLiteralExpr(Literal* expr)
@@ -351,6 +371,16 @@ bool RBInterpreter::isTrue(Expr* expr)
 std::string RBInterpreter::visitBlock(Block* stmt)
 {
 	return executeBlock(stmt->statements, new Environment(environment));
+}
+
+std::string RBInterpreter::visitClass(Class* stmt)
+{
+	environment->define(stmt->name->lexeme, stmt->name->lexeme);
+
+	LoxClass* klass = new LoxClass(stmt->name->lexeme);
+	classes.insert_or_assign(stmt->name->lexeme, klass);
+
+	return "";
 }
 
 std::string RBInterpreter::visitExpression(Stmt* stmt)
@@ -488,4 +518,28 @@ UserFunction::UserFunction(std::vector<Stmt*> iBody, std::vector<std::string> iA
 	arityNumber = argumentNames.size();
 	name = iName->lexeme;
 	clusure = iClosure;
+}
+
+LoxInstance* LoxClass::call(RBInterpreter* interpreter, std::vector<std::string> arguments)
+{
+	LoxInstance* newInstance = new LoxInstance(this);
+	return newInstance;
+}
+
+std::string LoxInstance::get(Token* name)
+{
+	auto found = fields.find(name->literal);
+
+	if (found != fields.end())
+	{
+		return (found->second);
+	}
+	else
+	{
+
+	}
+
+	std::string newText = ("Line (" + std::to_string(name->line) + ") ERROR: Undefined property '" + name->lexeme + "'.");
+	UtilityFunctions::print(newText.c_str());
+	return "";
 }

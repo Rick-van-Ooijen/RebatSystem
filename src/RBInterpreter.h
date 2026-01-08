@@ -26,8 +26,13 @@ class Block;
 class IfStmt;
 class While;
 class LoxCallable;
+class LoxClass;
+class LoxInstance;
 class Function;
 class Return;
+class Class;
+class Get;
+class Set;
 
 class Environment :  public Object {
 	GDCLASS(Environment, Object)
@@ -85,6 +90,8 @@ class RBInterpreter : public Node {
 	
 	Environment* environment = new Environment;
 	std::unordered_map<std::string, LoxCallable*> functions;
+	std::unordered_map<std::string, LoxClass*> classes;
+	std::unordered_map<std::string, LoxInstance*> instances;
 	
 	protected:
 	static void _bind_methods();
@@ -112,9 +119,13 @@ class RBInterpreter : public Node {
 
 	std::string visitCallExpr(Call* expr);
 
+	std::string visitGetExpr(Get* expr);
+
 	std::string visitGroupingExpr(Grouping* expr);
 
 	std::string visitLogicalExpr(Logical* expr);
+
+	std::string visitSetExpr(Set* expr);
 
 	std::string visitLiteralExpr(Literal* expr);
 
@@ -125,6 +136,8 @@ class RBInterpreter : public Node {
 	std::string visitVariableExpr(Variable* expr);
 
 	std::string visitBlock(Block* stmt);
+
+	std::string visitClass(Class* stmt);
 
 	std::string visitExpression(Stmt* stmt);
 
@@ -275,6 +288,47 @@ protected:
 	static void _bind_methods() {};
 };
 
+
+class LoxClass :  public Object {
+	GDCLASS(LoxClass, Object)
+
+public:
+	std::string name;
+
+	LoxClass() {};
+	LoxClass(std::string iName) { name = iName; };
+	~LoxClass() {};
+
+	std::string toString() { return name; };
+	LoxInstance* call(RBInterpreter* interpreter, std::vector<std::string> arguments);
+
+
+protected:
+	static void _bind_methods() {};
+};
+
+class LoxInstance :  public Object {
+	GDCLASS(LoxInstance, Object)
+
+public:
+	LoxClass* klass;
+	std::unordered_map<std::string, std::string> fields;
+
+
+	LoxInstance() {};
+	LoxInstance(LoxClass* iClass) { klass = iClass; };
+	~LoxInstance() {};
+
+	std::string toString() { return (klass->name + " instance");};
+
+	std::string get(Token* name);
+
+
+protected:
+	static void _bind_methods() {};
+};
+//LoxClass
+//loxObject;
 //classes
 //new class
 //like callable

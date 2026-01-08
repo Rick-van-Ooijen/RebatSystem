@@ -42,6 +42,10 @@ Expr* Parser::assignment() {
 		{
 			Token* name = (dynamic_cast<Variable*>(expr))->name;
 			return new Assign(name, value);
+		} else if (dynamic_cast<Get*>(expr) != nullptr) {
+			Get* get = dynamic_cast<Get*>(expr);
+
+			return new Set(get->object, get->name, value);
 		}
 
 		interpreter->reportError(tokens[current-1]->line, "Invalid assignment target.");
@@ -123,9 +127,13 @@ Expr* Parser::call() {
 	Expr* expr = primary();
 
 	bool looping = true;
-	while(looping){
+	while(looping)
+	{
 		if (match( {TokenType::T_LEFT_PAREN} )) {
 			expr = finishCall(expr);
+		} else if (match( {TokenType::T_DOT} )){
+			Token* name = consume(TokenType::T_IDENTIFIER, "Expect property name after '.'.");
+			expr = new Get(expr, name);
 		} else {
 			looping = false;
 		}
@@ -257,6 +265,11 @@ void Parser::error(Token* token, std::string message) {
 std::string Block::accept(RBInterpreter* interpreter)
 {
 	return interpreter->visitBlock(this);
+}
+
+std::string Class::accept(RBInterpreter* interpreter)
+{
+	return interpreter->visitClass(this);
 }
 
 std::string Expression::accept(RBInterpreter* interpreter)

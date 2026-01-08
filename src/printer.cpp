@@ -19,6 +19,11 @@ std::string Call::accept(AstPrinter* printer)
 	return printer->visitCallExpr(this);
 }
 
+std::string Get::accept(AstPrinter* printer)
+{
+	return "get";
+}
+
 std::string Grouping::accept(AstPrinter* printer)
 {
 	return printer->visitGroupingExpr(this);
@@ -60,6 +65,11 @@ std::string Call::acceptI(RBInterpreter* interpreter)
 	return interpreter->visitCallExpr(this);
 }
 
+std::string Get::acceptI(RBInterpreter* interpreter)
+{
+	return interpreter->visitGetExpr(this);
+}
+
 std::string Grouping::acceptI(RBInterpreter* interpreter)
 {
 	return interpreter->visitGroupingExpr(this);
@@ -68,6 +78,11 @@ std::string Grouping::acceptI(RBInterpreter* interpreter)
 std::string Logical::acceptI(RBInterpreter* interpreter)
 {
 	return interpreter->visitLogicalExpr(this);
+}
+
+std::string Set::acceptI(RBInterpreter* interpreter)
+{
+	return interpreter->visitSetExpr(this);
 }
 
 std::string Literal::acceptI(RBInterpreter* interpreter)
