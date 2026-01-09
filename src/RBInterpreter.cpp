@@ -83,6 +83,9 @@ void RBInterpreter::runFile(std::string path)
 			std::string text = statement->accept(this);
 			output = output + "\n" + text;
 		}
+
+		keptFunctionName = "";
+		keptInstance = nullptr;
 	}
 
 	UtilityFunctions::print(output.c_str());
@@ -243,6 +246,26 @@ std::string RBInterpreter::visitCallExpr(Call* expr)
 		arguments.push_back(evaluate(argument));
 	}
 
+	if (callee == "<member function>")
+	{
+		auto klass = classes.find(keptInstance->klass->name);
+		auto function = klass->second->methods.find(keptFunctionName);
+
+		if (arguments.size() != function->second->arity())
+		{
+			reportError(expr->paren->line, "Expected " + std::to_string(function->second->arity()) + " arguments but got " + std::to_string(arguments.size()) + ".");
+		}
+
+		std::string output = function->second->call(this, arguments);
+		
+
+		keptFunctionName = "";
+		keptInstance = nullptr;
+
+		return output;
+	}
+
+
 	auto function = functions.find(callee);
 	auto klass = classes.find(callee);
 
@@ -263,6 +286,7 @@ std::string RBInterpreter::visitCallExpr(Call* expr)
 		
 	}
 
+
 	if (arguments.size() != function->second->arity())
 	{
 		reportError(expr->paren->line, "Expected " + std::to_string(function->second->arity()) + " arguments but got " + std::to_string(arguments.size()) + ".");
@@ -282,6 +306,12 @@ std::string RBInterpreter::visitGetExpr(Get* expr)
 	{
 		reportError(expr->name->line, "Only instances have properties.");
 		return "";
+	}
+	std::string result = found->second->get(expr->name);
+	if (result == "<member function>")
+	{
+		keptFunctionName = expr->name->literal;
+		keptInstance = found->second;
 	}
 	return found->second->get(expr->name);
 
@@ -573,7 +603,11 @@ std::string LoxInstance::get(Token* name)
 	}
 	else
 	{
-
+		auto foundMethod = klass->methods.find(name->literal);
+		if (foundMethod != klass->methods.end())
+		{
+			return "<member function>";
+		}
 	}
 
 	std::string newText = ("Line (" + std::to_string(name->line) + ") ERROR: Undefined property '" + name->lexeme + "'.");

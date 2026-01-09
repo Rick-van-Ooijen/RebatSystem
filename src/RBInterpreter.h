@@ -102,6 +102,9 @@ class RBInterpreter : public Node {
 	std::unordered_map<std::string, LoxClass*> classes;
 	std::unordered_map<std::string, LoxInstance*> instances;
 
+	std::string keptFunctionName = "";
+	LoxInstance* keptInstance = nullptr;
+
 	Environment* globals = environment;
 	RBInterpreter();
 	~RBInterpreter();
