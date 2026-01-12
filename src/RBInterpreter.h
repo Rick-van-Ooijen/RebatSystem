@@ -34,6 +34,7 @@ class Return;
 class Class;
 class Get;
 class Set;
+class This;
 
 class Environment :  public Object {
 	GDCLASS(Environment, Object)
@@ -132,6 +133,8 @@ class RBInterpreter : public Node {
 	std::string visitLogicalExpr(Logical* expr);
 
 	std::string visitSetExpr(Set* expr);
+
+	std::string visitThisExpr(This* expr);
 
 	std::string visitLiteralExpr(Literal* expr);
 
@@ -310,7 +313,7 @@ public:
 	~LoxClass() {};
 
 	std::string toString() { return name; };
-	LoxInstance* call(RBInterpreter* interpreter, std::vector<std::string> arguments);
+	LoxInstance* call(RBInterpreter* interpreter, std::vector<std::string> arguments, std::string name);
 
 	LoxCallable* findMethod(std::string name){
 		auto found = methods.find(name);
@@ -337,10 +340,11 @@ class LoxInstance :  public Object {
 public:
 	LoxClass* klass;
 	std::unordered_map<std::string, std::string> fields;
+	std::string name;
 
 
 	LoxInstance() {};
-	LoxInstance(LoxClass* iClass) { klass = iClass; };
+	LoxInstance(LoxClass* iClass, std::string iName) { klass = iClass; name = iName; };
 	~LoxInstance() {};
 
 	std::string toString() { return (klass->name + " instance");};

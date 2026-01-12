@@ -85,6 +85,11 @@ std::string Set::acceptI(RBInterpreter* interpreter)
 	return interpreter->visitSetExpr(this);
 }
 
+std::string This::acceptI(RBInterpreter* interpreter)
+{
+	return interpreter->visitThisExpr(this);
+}
+
 std::string Literal::acceptI(RBInterpreter* interpreter)
 {
 	return interpreter->visitLiteralExpr(this);

@@ -8,10 +8,23 @@ fun banana(n)
 
 print banana(banana(7));
 
-class Bacon {
+class Bacon {	
+	cannibalism() {
+		this.eat();
+	}
 	eat() {
 		print "Crunch crunch crunch!";
 	}
+	
+	init(a)
+	{
+		print "bacon was baked with " + a;
+	}
+	
 }
 
-Bacon().eat();
+var a = Bacon("an oven");
+a.eat();
+a.cannibalism();
+
+a.eat();

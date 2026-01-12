@@ -170,6 +170,10 @@ Expr* Parser::primary() {
 		return new Literal(tokens[current-1]->literal);
 	};
 
+	if (match({TokenType::T_THIS})) {
+		return new This(tokens[current-1]);
+	}
+
 	if (match({TokenType::T_IDENTIFIER})) {
 		return new Variable(tokens[current-1]);
 	}

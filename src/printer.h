@@ -177,6 +177,24 @@ protected:
 	static void _bind_methods() {};
 };
 
+class This : public Expr {
+	GDCLASS(This, Expr)
+public:
+	Token* keyword;
+
+	This() {};
+	~This() {};
+	This(Token* iKeyword) {
+		keyword = iKeyword;
+	};
+
+	std::string acceptI(RBInterpreter* interpreter) override;
+
+
+protected:
+	static void _bind_methods() {};
+};
+
 class Literal : public Expr {
 	GDCLASS(Literal, Expr)
 public:

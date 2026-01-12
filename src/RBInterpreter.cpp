@@ -277,10 +277,16 @@ std::string RBInterpreter::visitCallExpr(Call* expr)
 	
 	if (klass != classes.end())
 	{
-		LoxInstance* instance = klass->second->call(this, arguments);
-		
 		std::string instanceID = ("instance: " + instances.size());
+		LoxInstance* instance = klass->second->call(this, arguments, instanceID);
+		
 		instances.insert_or_assign(instanceID, instance);
+
+		auto initializer = klass->second->methods.find("init");
+		if (initializer != klass->second->methods.end())
+		{
+			initializer->second->call(this, arguments);
+		}
 		
 		return instanceID;
 		
@@ -353,6 +359,17 @@ std::string RBInterpreter::visitSetExpr(Set* expr)
 
 	return value;
 
+}
+
+std::string RBInterpreter::visitThisExpr(This* expr)
+{
+	if (keptInstance != nullptr)
+	{
+		return keptInstance->name;
+	}
+
+	reportError(expr->keyword->line, "No instance kept open for 'this' to reference.");
+	return "";
 }
 
 std::string RBInterpreter::visitLiteralExpr(Literal* expr)
@@ -431,13 +448,18 @@ std::string RBInterpreter::visitClass(Class* stmt)
 
 
 	std::unordered_map<std::string, LoxCallable*> methods;
-	std::vector<std::string> argNames;
-
+	
 	for(Function* method : stmt->methods)
 	{
+		std::vector<std::string> argNames;
+		for (Token* current : method->params)
+		{
+			argNames.push_back(current->lexeme);
+		}
+
 		LoxCallable* function = new UserFunction(method->body, argNames, method->name, environment);
 		methods.insert_or_assign(method->name->lexeme, function);
-		argNames.push_back(method->name->lexeme);
+
 	}
 
 	LoxClass* klass = new LoxClass(stmt->name->lexeme, methods);
@@ -539,7 +561,7 @@ std::string Environment::get(Token* name, RBInterpreter* interpreter)
 	if((interpreter->functions.find(name->lexeme) == interpreter->functions.end()) &&
 		(interpreter->classes.find(name->lexeme) == interpreter->classes.end()) &&
 		(interpreter->instances.find(name->lexeme) == interpreter->instances.end())) {
-		std::string newText = ("Line (" + std::to_string(name->line) + ") ERROR: Undefined variable '" + name->lexeme + "'. HEREREREEERXREEEEEE");
+		std::string newText = ("Line (" + std::to_string(name->line) + ") ERROR: Undefined variable '" + name->lexeme + "'.");
 		UtilityFunctions::print(newText.c_str());
 	}
 
@@ -587,9 +609,10 @@ UserFunction::UserFunction(std::vector<Stmt*> iBody, std::vector<std::string> iA
 	clusure = iClosure;
 }
 
-LoxInstance* LoxClass::call(RBInterpreter* interpreter, std::vector<std::string> arguments)
+LoxInstance* LoxClass::call(RBInterpreter* interpreter, std::vector<std::string> arguments, std::string name)
 {
-	LoxInstance* newInstance = new LoxInstance(this);
+	LoxInstance* newInstance = new LoxInstance(this, name);
+
 	return newInstance;
 }
 
