@@ -58,10 +58,10 @@ void RBInterpreter::runFile(std::string path)
 	Scanner scanner = Scanner(content, this);
 	std::vector<Token*> tokens = scanner.scanTokens(content);
 
-	for(Token* currentToken : tokens)
+	/*for(Token* currentToken : tokens)
 	{
 		UtilityFunctions::print((*currentToken).toString().c_str());
-	}
+	}*/
 
 	
 	Parser parser = Parser(tokens, this);
@@ -74,21 +74,21 @@ void RBInterpreter::runFile(std::string path)
 	std::vector<Stmt*> statements = parser.parse();
 
 	//evaluate(parser.parse());
-	std::string output = "statements:" + std::to_string(statements.size());
+	//std::string output = "statements:" + std::to_string(statements.size());
 	
 	for (Stmt* statement : statements)
 	{
 		if (statement != nullptr)
 		{
 			std::string text = statement->accept(this);
-			output = output + "\n" + text;
+			//output = output + "\n" + text;
 		}
 
 		keptFunctionName = "";
 		keptInstance = nullptr;
 	}
 
-	UtilityFunctions::print(output.c_str());
+	//UtilityFunctions::print(output.c_str());
 
 }
 
