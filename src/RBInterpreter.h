@@ -304,11 +304,13 @@ class LoxClass :  public Object {
 public:
 	std::string name;
 	std::unordered_map<std::string, LoxCallable*> methods;
+	LoxClass* superclass = nullptr;
 
 	LoxClass() {};
-	LoxClass(std::string iName, std::unordered_map<std::string, LoxCallable*> iMethods) {
+	LoxClass(std::string iName, std::unordered_map<std::string, LoxCallable*> iMethods, LoxClass* iSuperclass) {
 		name = iName;
 		methods = iMethods;	
+		superclass = iSuperclass;
 	};
 	~LoxClass() {};
 
@@ -324,6 +326,10 @@ public:
 		}
 		else
 		{
+			if (superclass != nullptr)
+			{
+				return superclass->findMethod(name);
+			}
 			return nullptr;
 		}
 
@@ -363,12 +369,7 @@ public:
 protected:
 	static void _bind_methods() {};
 };
-//LoxClass
-//loxObject;
-//classes
-//new class
-//like callable
-//has callables
+
 
 }
 #endif

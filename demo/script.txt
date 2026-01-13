@@ -1,12 +1,12 @@
-print clock();
+//print clock();
 
-fun banana(n)
-{
-	print "banana";
-	return n + 1;
-}
+//fun banana(n)
+//{
+//	print "banana";
+//	return n + 1;
+//}
 
-print banana(banana(7));
+//print banana(banana(7));
 
 class Bacon {	
 	cannibalism() {
@@ -19,12 +19,17 @@ class Bacon {
 	init(a)
 	{
 		print "bacon was baked with " + a;
-	}
-	
+	}	
 }
 
-var a = Bacon("an oven");
+class speklap < Bacon {
+
+	cannibalism() {
+		print "no";
+	}
+}
+
+
+var a = speklap("an oven");
 a.eat();
 a.cannibalism();
-
-a.eat();

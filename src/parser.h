@@ -50,9 +50,10 @@ public:
 
 	Class() {};
 	~Class() {};
-	Class(Token* iName, std::vector<Function*> iMethods) {
+	Class(Token* iName, std::vector<Function*> iMethods, Expr* superclass) {
 		name = iName;
 		methods = iMethods;
+		expression = superclass;
 	};
 	
 
@@ -223,6 +224,14 @@ public:
 	Stmt* classDeclaration()
 	{
 		Token* name = consume(TokenType::T_IDENTIFIER, ("Expect class name."));
+
+		Variable* superclass = nullptr;
+		if(match({TokenType::T_LESS}))
+		{
+			consume(TokenType::T_IDENTIFIER, "Expect superclass name.");
+			superclass = new Variable(tokens[current-1]);
+		}
+
 		consume(TokenType::T_LEFT_BRACE, "Expect '{' before class body.");
 		std::vector<Function*> methods;
 
@@ -234,7 +243,7 @@ public:
 		consume(TokenType::T_RIGHT_BRACE, "Expect '}' after class body.");
 
 
-		return new Class(name, methods);
+		return new Class(name, methods, superclass);
 	}
 
 	Stmt* function(std::string kind) {

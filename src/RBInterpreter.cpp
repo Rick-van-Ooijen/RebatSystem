@@ -249,14 +249,14 @@ std::string RBInterpreter::visitCallExpr(Call* expr)
 	if (callee == "<member function>")
 	{
 		auto klass = classes.find(keptInstance->klass->name);
-		auto function = klass->second->methods.find(keptFunctionName);
+		LoxCallable* function = klass->second->findMethod(keptFunctionName);
 
-		if (arguments.size() != function->second->arity())
+		if (arguments.size() != function->arity())
 		{
-			reportError(expr->paren->line, "Expected " + std::to_string(function->second->arity()) + " arguments but got " + std::to_string(arguments.size()) + ".");
+			reportError(expr->paren->line, "Expected " + std::to_string(function->arity()) + " arguments but got " + std::to_string(arguments.size()) + ".");
 		}
 
-		std::string output = function->second->call(this, arguments);
+		std::string output = function->call(this, arguments);
 		
 
 		keptFunctionName = "";
@@ -282,10 +282,10 @@ std::string RBInterpreter::visitCallExpr(Call* expr)
 		
 		instances.insert_or_assign(instanceID, instance);
 
-		auto initializer = klass->second->methods.find("init");
-		if (initializer != klass->second->methods.end())
+		LoxCallable* initializer = klass->second->findMethod("init");
+		if (initializer != nullptr)
 		{
-			initializer->second->call(this, arguments);
+			initializer->call(this, arguments);
 		}
 		
 		return instanceID;
@@ -462,7 +462,23 @@ std::string RBInterpreter::visitClass(Class* stmt)
 
 	}
 
-	LoxClass* klass = new LoxClass(stmt->name->lexeme, methods);
+	LoxClass* superclass = nullptr;
+	if(stmt->expression != nullptr)
+	{
+		Variable* superName = static_cast<Variable*>(stmt->expression);
+		if(superName != nullptr)
+		{
+
+			std::string name = "Bacon";//superName->name->lexeme;
+			auto found = classes.find(name);
+			if(found != classes.end())
+			{
+				superclass = found->second;
+			}
+		}
+	}
+
+	LoxClass* klass = new LoxClass(stmt->name->lexeme, methods, superclass);
 	classes.insert_or_assign(stmt->name->lexeme, klass);
 
 	return "";
@@ -626,8 +642,8 @@ std::string LoxInstance::get(Token* name)
 	}
 	else
 	{
-		auto foundMethod = klass->methods.find(name->literal);
-		if (foundMethod != klass->methods.end())
+		LoxCallable* foundMethod = klass->findMethod(name->literal);
+		if (foundMethod != nullptr)
 		{
 			return "<member function>";
 		}
@@ -638,7 +654,7 @@ std::string LoxInstance::get(Token* name)
 	return "";
 }
 
-	void LoxInstance::set(Token* name, std::string value)
-	{
-		fields.insert_or_assign(name->lexeme, value);
-	}
+void LoxInstance::set(Token* name, std::string value)
+{
+	fields.insert_or_assign(name->lexeme, value);
+}
